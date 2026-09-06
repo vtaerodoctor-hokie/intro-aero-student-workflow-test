@@ -12,13 +12,15 @@ export function sourceFiles(root){
 export function allowed(p){return p.startsWith(mission.directory+'/')||mission.implementationPaths.includes(p);}
 export function protectedDiff(baseline,current){return [...new Set([...Object.keys(baseline),...Object.keys(current)])].filter(p=>!allowed(p)&&baseline[p]!==current[p]).sort().map(p=>`${p.startsWith('src/student/')||p.startsWith('tests/student/')||p.startsWith('student-work/')?'PROTECTED PREVIOUS-STAGE FILE MODIFIED':'PROTECTED SYSTEM MODIFIED'}: ${p}`);}
 export function readJson(file,fallback=null){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
+const baselineCache=new Map();
 export function publicBaseline(root){
  try{
-  const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:10*1024*1024}).trim();
-  const revision=git(['rev-list','--max-parents=0','HEAD']).split('\n')[0];
+  const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:10*1024*1024}).trim();
+  let revision;try{revision=git(['rev-parse','--verify','refs/tags/baseline/student-shell^{commit}']);}catch{revision=git(['rev-list','--max-parents=0','HEAD']).split('\n')[0];}
+  const cacheKey=root+revision;if(baselineCache.has(cacheKey))return baselineCache.get(cacheKey);
   const files={};
   for(const name of git(['ls-tree','-r','--name-only',revision]).split('\n'))if(name&&!name.startsWith('.instructor/'))files[name]=digest(execFileSync('git',['show',`${revision}:${name}`],{cwd:root,maxBuffer:10*1024*1024}));
-  return {revision,files,provenance:'Initial test-repository commit. This protects the starting files; it is not verification of Week 5 physics.'};
+  const baseline={revision,files,week:'starting-files',provenance:'Test shell baseline. This protects starting files; it is not verification of Week 5 physics.'};baselineCache.set(cacheKey,baseline);return baseline;
  }catch{return null;}
 }
 export function collect(root){
@@ -31,7 +33,7 @@ export function collect(root){
  const sourceHash=digest(JSON.stringify(relevant.sort(([a],[b])=>a.localeCompare(b))));
  const report=readJson(path.join(root,'.instructor/private/mission-verification.json'));
  const records=readJson(path.join(root,mission.directory,'evidence/records.json'),[]);
- const data={files,sourceHash,baselineHash,protection:{passed:errors.length===0,errors},implemented:mission.implementationPaths.every(p=>fs.existsSync(path.join(root,p))),report,records:Array.isArray(records)?records:[],baseline:baseline?{week:'week05',revision:baseline.revision,provenance:baseline.provenance}:null};
+ const data={files,sourceHash,baselineHash,protection:{passed:errors.length===0,errors},implemented:mission.implementationPaths.every(p=>fs.existsSync(path.join(root,p))),report,records:Array.isArray(records)?records:[],baseline:baseline?{week:baseline.week||'week05',revision:baseline.revision,provenance:baseline.provenance}:null};
  return {...data,status:validateMission(data)};
 }
 export function gitHistoryVerified(root){

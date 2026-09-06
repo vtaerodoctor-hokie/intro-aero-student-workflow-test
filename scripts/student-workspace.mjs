@@ -29,13 +29,13 @@ export function repository(root){
  if(owner.toLowerCase()==='chula-aero-engineering'||repo.toLowerCase().includes('instructor'))throw Error('Saving is disabled in instructor and shared course repositories. Open a Codespace from your personal fork.');
  return {owner,repo,url:`https://github.com/${owner}/${repo}`,branch:git(root,['branch','--show-current'])};
 }
-export function checkpoint(root,{name}){
+export function checkpoint(root,{name},run=git){
  safeFile(root,name);const info=repository(root);if(!info.branch)throw Error('Select a branch before saving a checkpoint.');
- const staged=git(root,['diff','--cached','--name-only']);if(staged)throw Error('Other changes are staged. Review them in source control before creating an app checkpoint.');
- git(root,['add','--',name]);
- if(git(root,['diff','--cached','--name-only']))git(root,['commit','-m',`Mission checkpoint: ${path.basename(name)}`]);
- git(root,['push','origin',`HEAD:refs/heads/${info.branch}`]);
- const revision=git(root,['rev-parse','HEAD']);return {revision,url:`${info.url}/commit/${revision}`};
+ const staged=run(root,['diff','--cached','--name-only']);if(staged)throw Error('Other changes are staged. Review them in source control before creating an app checkpoint.');
+ run(root,['add','--',name]);
+ if(run(root,['diff','--cached','--name-only']))run(root,['commit','-m',`Mission checkpoint: ${path.basename(name)}`]);
+ run(root,['push','origin',`HEAD:refs/heads/${info.branch}`]);
+ const revision=run(root,['rev-parse','HEAD']);return {revision,url:`${info.url}/commit/${revision}`};
 }
 export function studentWorkspacePlugin(){let root,busy=false;return {name:'student-workspace',configResolved(c){root=c.root;},configureServer(server){
  server.middlewares.use('/api/student',async(req,res)=>{
