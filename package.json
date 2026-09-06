@@ -1,0 +1,28 @@
+{
+  "name": "intro-aero-design-tool",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "verify:core-boundary": "node scripts/verify-core-boundary.mjs",
+    "mission:status": "node scripts/validate-mission.mjs",
+    "mission:verify": "node scripts/validate-mission.mjs --verify",
+    "validate:protected": "node scripts/validate-mission.mjs --protected",
+    "validate:week06": "node scripts/validate-mission.mjs --complete",
+    "student": "node scripts/start-student.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  }
+}

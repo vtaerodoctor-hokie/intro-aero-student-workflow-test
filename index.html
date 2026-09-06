@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A semester-long aircraft digital twin built from verified introductory aerospace models." />
+    <meta name="theme-color" content="#164f45" />
+    <title>Intro Aero Digital Twin</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Keep a failed offline startup actionable instead of leaving a blank page.
+      setTimeout(async () => {
+        const root = document.getElementById('root');
+        if (root.childElementCount) return;
+        const message = document.createElement('p');
+        message.textContent = 'The application has not loaded. Reconnect to the local preview server and reload.';
+        root.append(message);
+        const details = document.createElement('pre');
+        const scripts = [...document.querySelectorAll('script[src]')];
+        const cached = await Promise.all(scripts.map(async script => ({asset: script.src, cached: Boolean(await caches.match(script.src))})));
+        details.textContent = JSON.stringify({controller: navigator.serviceWorker?.controller?.scriptURL || 'none', cached}, null, 2);
+        root.append(details);
+        const channel = new MessageChannel();
+        channel.port1.onmessage = event => { details.textContent += '\nFetch diagnostics: '+JSON.stringify(event.data, null, 2); channel.port1.close(); };
+        navigator.serviceWorker?.controller?.postMessage({type:'diagnostics'},[channel.port2]);
+      }, 4000);
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "protectedStudentPrefixes": [
+    "src/student/",
+    "tests/student/",
+    "student-work/"
+  ],
+  "instructorOwnedPrefixes": [
+    "src/core/",
+    "docs/",
+    "templates/",
+    "examples/",
+    "scripts/",
+    ".github/",
+    ".course/"
+  ],
+  "instructorOwnedPaths": [
+    "AGENTS.md",
+    "README.md",
+    "src/main.jsx",
+    "package.json",
+    "package-lock.json",
+    "vite.config.js",
+    "index.html"
+  ]
+}

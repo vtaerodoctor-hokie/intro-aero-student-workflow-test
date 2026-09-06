@@ -1,0 +1,20 @@
+# Stage 03 — Inputs
+
+## Variables
+<!-- STUDENT COMPLETE -->
+
+## Units
+<!-- STUDENT COMPLETE -->
+
+## Provenance
+<!-- STUDENT COMPLETE -->
+
+MASS_KG: TODO kg
+IY_KGM2: TODO kg*m^2
+SPEED_MPS: TODO m/s
+DENSITY_KGM3: TODO kg/m^3
+AREA_M2: TODO m^2
+CHORD_M: TODO m
+OTHER_MOMENT_NM: TODO N*m
+DELTA_CM: TODO 1
+TARGET_ACCEL_RAD_S2: TODO rad/s^2
