@@ -16,7 +16,7 @@ const baselineCache=new Map();
 export function publicBaseline(root){
  try{
   const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:10*1024*1024}).trim();
-  let revision;try{revision=git(['rev-parse','--verify','refs/tags/baseline/student-shell^{commit}']);}catch{revision=git(['rev-list','--max-parents=0','HEAD']).split('\n')[0];}
+  let revision;for(const tag of ['baseline/student-shell-v2','baseline/student-shell']){try{revision=git(['rev-parse','--verify',`refs/tags/${tag}^{commit}`]);break;}catch{}}if(!revision)revision=git(['rev-list','--max-parents=0','HEAD']).split('\n')[0];
   const cacheKey=root+revision;if(baselineCache.has(cacheKey))return baselineCache.get(cacheKey);
   const files={};
   for(const name of git(['ls-tree','-r','--name-only',revision]).split('\n'))if(name&&!name.startsWith('.instructor/'))files[name]=digest(execFileSync('git',['show',`${revision}:${name}`],{cwd:root,maxBuffer:10*1024*1024}));

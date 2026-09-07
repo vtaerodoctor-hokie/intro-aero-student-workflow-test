@@ -19,5 +19,5 @@
       ]
     }
   },
-  "postStartCommand": "nohup npm run student > /tmp/aircraft-lab.log 2>&1 &"
+  "postStartCommand": "node scripts/autostart-student.mjs"
 }
