@@ -1,0 +1,28 @@
+import {describe,it,expect} from 'vitest';
+import fs from 'node:fs';
+import {evaluate} from '../../src/core/onboarding/expression.js';
+import {runMission,progress,reflectionChecks} from '../../src/core/onboarding/engine.js';
+import {reviewSubmission} from '../../scripts/instructor/review.mjs';
+import {Store,encrypt,decrypt} from '../../scripts/instructor/store.mjs';
+import {validateClassroomUrl} from '../../scripts/classroom-client.mjs';
+const missions=Array.from({length:13},(_,i)=>JSON.parse(fs.readFileSync(new URL(`../../lessons/onboarding/mission${String(i+1).padStart(2,'0')}.json`,import.meta.url))));
+const reflection={observation:'Observed the comparison.',change:'Checked the units.',limit:'Only the supplied condition.',result:'supported'};
+function answer(m){const a=Object.fromEntries(m.fields.map(f=>[f.id,f.type==='number'?0:f.type==='select'?f.options[0]:'Written reasoning for instructor review.']));for(const c of m.checks)if(c.field)a[c.field]=c.expected;return a;}
+describe('onboarding progression and evaluation',()=>{
+ it('has exactly one missing section per lesson and twelve in capstone',()=>{missions.slice(0,12).forEach((m,i)=>{expect(m.missing).toEqual([i]);expect(m.supplied.filter(x=>x!==null)).toHaveLength(11);expect(m.fields.every(f=>f.section===i)).toBe(true);});expect(missions[12].missing).toHaveLength(12);});
+ it('runs a complete twelve-mission progression plus capstone',()=>{const work={};for(const m of missions){const a=answer(m);if(m.number===2)a.equation='0.5*rho*V^2*S*Cd';if(m.number===13){a.liftEquation='0.5*rho*V^2*S*CL';a.dragEquation='0.5*rho*V^2*S*Cd';}if(m.codeCases)a.code='function calculate(i){if(i.V<0)throw Error("speed");return .5*i.rho*i.V*i.V*i.S*i.Cd;}';const result=runMission(m,a);expect(result.passed,m.id).toBe(true);work[m.id]={answer:a,reflection,attempt:{answerSnapshot:JSON.stringify(a),missionVersion:m.version,result}};expect(progress(missions,work)[m.number-1].complete,m.id).toBe(true);}});
+ it('requires supplied answers without pretending to grade prose',()=>{for(const m of missions)expect(runMission(m,{}).runnable).toBe(false);expect(reflectionChecks(reflection)).toBe(true);});
+ it('accepts the first question, exposes wrong thresholds and invalidates edited evidence',()=>{const m=missions[0],a=answer(m),result=runMission(m,a);expect(result.passed).toBe(true);expect(result.traces[0].supplied).toBeLessThan(.12);expect(result.traces[1].supplied).toBeGreaterThan(.12);const w={answer:a,reflection,attempt:{answerSnapshot:JSON.stringify(a),missionVersion:m.version,result}};expect(progress(missions,{mission01:w})[1].state).toBe('available');w.answer={...a,threshold:1};expect(progress(missions,{mission01:w})[0].stale).toBe(true);expect(progress(missions,{mission01:w})[1].state).toBe('locked');});
+ it('does not trust a forged passed flag for numeric answers',()=>{const m=missions[0],a={...answer(m),threshold:10},w={answer:a,reflection,attempt:{answerSnapshot:JSON.stringify(a),missionVersion:m.version,result:{passed:true}}};expect(progress(missions,{mission01:w})[0].complete).toBe(false);expect(reviewSubmission(m,w).status).toBe('revise');const msg={kind:'override',mission:m.id,snapshot:JSON.stringify(a)};expect(progress(missions,{mission01:w},[msg])[0].complete).toBe(true);msg.snapshot='{}';expect(progress(missions,{mission01:w},[msg])[0].complete).toBe(false);});
+ it('checks speed scaling and rejects a linear model with useful numeric evidence',()=>{const m=missions[1],a=answer(m);a.equation='0.5*rho*V^2*S*Cd';expect(runMission(m,a).passed).toBe(true);a.equation='0.5*rho*V*S*Cd';const r=runMission(m,a);expect(r.runnable).toBe(true);expect(r.passed).toBe(false);expect(r.checks.some(c=>c.expected===384&&!c.passed)).toBe(true);});
+ it('shows a distinct synthetic out-of-range reference',()=>{const m=missions[5],r=runMission(m,answer(m));expect(r.passed).toBe(true);expect(r.traces.at(-1)).toEqual({x:18,supplied:1.8,reference:.8});});
+ it('does not execute expressions as JavaScript',()=>{expect(evaluate('-2^2+3*(4-1)')).toBe(5);for(const s of ['globalThis.fetch(1)','1/0','NaN','x.y','while(true){}'])expect(()=>evaluate(s)).toThrow();});
+});
+describe('instructor access and data',()=>{
+ it('encrypts tokens and separates feedback-only connection credentials',()=>{const encrypted=encrypt('secret-token','key');expect(encrypted).not.toContain('secret-token');expect(decrypt(encrypted,'key')).toBe('secret-token');expect(()=>decrypt(encrypted,'wrong')).toThrow();const db=new Store(':memory:');const token=db.createConnection('student');expect(db.connection(token).login).toBe('student');expect(db.session(token)).toBeUndefined();expect(db.connection('bad')).toBeUndefined();db.close();});
+ it('restricts classroom proxy destinations',()=>{expect(validateClassroomUrl('https://abc-5180.app.github.dev/')).toBe('https://abc-5180.app.github.dev');for(const u of ['http://localhost','https://evil.com','https://app.github.dev.evil.com','https://x.app.github.dev/private','https://user:pass@x.app.github.dev'])expect(()=>validateClassroomUrl(u)).toThrow();});
+});
+
+describe('checkpoint artifact exports',()=>{
+ it('exports code as review artifacts without executing it',async()=>{const {implementationFiles}=await import('../../scripts/onboarding-implementation.mjs');const m=missions[10],files=implementationFiles(m.id,{answer:{code:'throw Error("must not execute")'},attempt:{result:{passed:false}}},m);expect(Object.keys(files)).toHaveLength(3);expect(Object.keys(files).every(p=>p.startsWith('student-work/onboarding/implementation/mission11/'))).toBe(true);expect(files[Object.keys(files)[0]]).toContain('must not execute');expect(implementationFiles('mission01',{},missions[0])).toEqual({});});
+});

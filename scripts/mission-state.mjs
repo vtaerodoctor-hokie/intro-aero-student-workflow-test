@@ -9,11 +9,12 @@ export function sourceFiles(root){
  const skip=new Set(['.git','node_modules','dist','.instructor','.cache','.vite']);
  const files={};function walk(dir){for(const ent of fs.readdirSync(dir,{withFileTypes:true})){if(skip.has(ent.name))continue;const full=path.join(dir,ent.name),rel=path.relative(root,full).split(path.sep).join('/');if(ent.isSymbolicLink()){files[rel]=`symlink:${fs.readlinkSync(full)}`;continue;}if(ent.isDirectory())walk(full);else files[rel]=digest(fs.readFileSync(full));}}walk(root);return files;
 }
-export function allowed(p){return p.startsWith(mission.directory+'/')||mission.implementationPaths.includes(p);}
+export function allowed(p){return p.startsWith('student-work/onboarding/')||p.startsWith(mission.directory+'/')||mission.implementationPaths.includes(p);}
 export function protectedDiff(baseline,current){return [...new Set([...Object.keys(baseline),...Object.keys(current)])].filter(p=>!allowed(p)&&baseline[p]!==current[p]).sort().map(p=>`${p.startsWith('src/student/')||p.startsWith('tests/student/')||p.startsWith('student-work/')?'PROTECTED PREVIOUS-STAGE FILE MODIFIED':'PROTECTED SYSTEM MODIFIED'}: ${p}`);}
 export function readJson(file,fallback=null){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 const baselineCache=new Map();
 export function publicBaseline(root){
+ const shell=readJson(path.join(root,'.course/onboarding-baseline.json'));if(shell)return {revision:'onboarding-release',week:'starting-files',files:{...shell.files,'.course/onboarding-baseline.json':digest(fs.readFileSync(path.join(root,'.course/onboarding-baseline.json')))},provenance:'Bundled onboarding release, not Week 5 physics verification.'};
  try{
   const git=args=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:10*1024*1024}).trim();
   let revision;for(const tag of ['baseline/student-shell-v3','baseline/student-shell-v2','baseline/student-shell']){try{revision=git(['rev-parse','--verify',`refs/tags/${tag}^{commit}`]);break;}catch{}}if(!revision)revision=git(['rev-list','--max-parents=0','HEAD']).split('\n')[0];

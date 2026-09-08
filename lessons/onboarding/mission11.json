@@ -1,0 +1,89 @@
+{
+  "id": "mission11",
+  "number": 11,
+  "version": "1.0.0",
+  "title": "Implement an approved specification",
+  "brief": "Write or paste function calculate(input) returning drag in N. Input has rho, V, S, Cd. Reject negative V by throwing Error. Use only these inputs.",
+  "missing": [
+    10
+  ],
+  "supplied": [
+    "Does the implementation reproduce the declared drag relationship?",
+    "D=0.5*rho*V^2*S*Cd; reject V<0",
+    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 10 m²\nCd = 0.04 dimensionless",
+    "A finite drag in N, or an input error.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Doubling speed multiplies drag by four.",
+    "At 20 m/s D=96 N; at 40 m/s D=384 N.",
+    "Cases: zero speed; baseline; doubled speed; negative speed rejection.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    null,
+    "Retain only if all declared cases pass."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 10,
+    "Cd": 0.04
+  },
+  "fields": [
+    {
+      "id": "code",
+      "label": "JavaScript: function calculate(input) { … }",
+      "type": "code",
+      "section": 10
+    },
+    {
+      "id": "explanation10",
+      "section": 10,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [],
+  "hints": [
+    "Write a function named calculate that returns a finite drag number.",
+    "Reject negative speed before evaluating the quadratic relationship.",
+    "Check zero speed, the baseline, doubled speed, and the negative-input case."
+  ],
+  "sweep": null,
+  "codeCases": [
+    {
+      "input": {
+        "rho": 1.2,
+        "V": 0,
+        "S": 10,
+        "Cd": 0.04
+      },
+      "expected": 0
+    },
+    {
+      "input": {
+        "rho": 1.2,
+        "V": 20,
+        "S": 10,
+        "Cd": 0.04
+      },
+      "expected": 96
+    },
+    {
+      "input": {
+        "rho": 1.2,
+        "V": 40,
+        "S": 10,
+        "Cd": 0.04
+      },
+      "expected": 384
+    },
+    {
+      "input": {
+        "rho": 1.2,
+        "V": -1,
+        "S": 10,
+        "Cd": 0.04
+      },
+      "throws": true
+    }
+  ]
+}

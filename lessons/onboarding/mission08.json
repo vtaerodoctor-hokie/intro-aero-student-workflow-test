@@ -1,0 +1,78 @@
+{
+  "id": "mission08",
+  "number": 8,
+  "version": "1.0.0",
+  "title": "Calculate a trustworthy reference",
+  "brief": "A perpendicular 250 N force acts at a 0.8 m arm. Positive force produces positive moment.",
+  "missing": [
+    7
+  ],
+  "supplied": [
+    "What moment does the applied force generate?",
+    "M=F*arm",
+    "F = 250 N\narm = 0.8 m",
+    "Moment in N m.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Doubling force doubles moment.",
+    null,
+    "Check zero force, sign reversal, and arm scaling.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each F in [-250, 0, 125, 250, 500]:\n  configured output = F*arm\n  comparison = F*arm\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Retain the perpendicular-force moment claim."
+  ],
+  "variables": {
+    "F": 250,
+    "arm": 0.8
+  },
+  "fields": [
+    {
+      "id": "moment",
+      "label": "Reference moment (N m)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "knm",
+      "label": "Same moment (kN m)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "explanation7",
+      "section": 7,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "moment",
+      "expected": 200,
+      "message": "Multiply the perpendicular force by the arm."
+    },
+    {
+      "field": "knm",
+      "expected": 0.2,
+      "message": "There are 1,000 N m in one kN m."
+    }
+  ],
+  "hints": [
+    "The moment arm is perpendicular to the force.",
+    "Multiply 250 N by 0.8 m, then convert N m into kN m.",
+    "200 N m equals 0.2 kN m. Preserve the declared nose-up sign."
+  ],
+  "sweep": {
+    "variable": "F",
+    "values": [
+      -250,
+      0,
+      125,
+      250,
+      500
+    ],
+    "expression": "F*arm",
+    "reference": "F*arm"
+  },
+  "codeCases": null
+}

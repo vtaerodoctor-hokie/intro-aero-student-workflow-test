@@ -1,0 +1,88 @@
+{
+  "id": "mission02",
+  "number": 2,
+  "version": "1.0.0",
+  "title": "Connect speed to drag",
+  "brief": "Write an equation using rho, V, S, and Cd. The wind-tunnel comparison holds geometry and coefficients fixed.",
+  "missing": [
+    1
+  ],
+  "supplied": [
+    "How does drag change with speed for a fixed coefficient?",
+    null,
+    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 10 m²\nCd = 0.04 dimensionless",
+    "Drag D in N.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Doubling speed multiplies drag by four.",
+    "At 20 m/s drag=96 N; at 40 m/s drag=384 N.",
+    "Check both speeds, zero speed, and coefficient scaling.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each V in [0, 10, 20, 30, 40]:\n  configured output = the expression supplied in your Physics model section\n  comparison = 0.5*rho*V^2*S*Cd\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Retain the fixed-coefficient drag relation within this supplied condition."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 10,
+    "Cd": 0.04
+  },
+  "fields": [
+    {
+      "id": "equation",
+      "label": "D = (use rho, V, S, Cd)",
+      "type": "equation",
+      "section": 1
+    },
+    {
+      "id": "explanation1",
+      "section": 1,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "studentExpression": "equation",
+      "variables": {
+        "V": 0
+      },
+      "expected": 0,
+      "message": "At 0 m/s the declared drag relationship gives 0 N."
+    },
+    {
+      "studentExpression": "equation",
+      "variables": {
+        "V": 20
+      },
+      "expected": 96,
+      "message": "At 20 m/s the declared drag relationship gives 96 N."
+    },
+    {
+      "studentExpression": "equation",
+      "variables": {
+        "V": 40
+      },
+      "expected": 384,
+      "message": "At 40 m/s the declared drag relationship gives 384 N."
+    }
+  ],
+  "hints": [
+    "Dynamic pressure contains speed squared. Check the units of rho*V².",
+    "Double speed while holding density, area and Cd fixed. Drag should quadruple.",
+    "Use 0.5*rho*V^2*S*Cd. Explain why a linear-speed expression fails the sweep."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      0,
+      10,
+      20,
+      30,
+      40
+    ],
+    "studentField": "equation",
+    "reference": "0.5*rho*V^2*S*Cd"
+  },
+  "codeCases": null
+}

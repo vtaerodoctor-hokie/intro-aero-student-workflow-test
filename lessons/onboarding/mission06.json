@@ -1,0 +1,100 @@
+{
+  "id": "mission06",
+  "number": 6,
+  "version": "1.0.0",
+  "title": "Stop at the model boundary",
+  "brief": "The supplied linear fit CL=0.1*alpha is valid only from −4 to +10 degrees. A supplied reference curve departs from that fit outside this interval.",
+  "missing": [
+    5
+  ],
+  "supplied": [
+    "Can this linear fit establish behavior at 18 degrees?",
+    "CL=0.1*alpha for the declared interval",
+    "alpha = 5 deg",
+    "CL and whether the requested angle is supported.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    null,
+    "Extrapolation can give a number without giving a supported claim.",
+    "At 5 deg CL=0.5; 18 deg is outside the fit validity.\nSynthetic teaching observations: alpha [-4, 0, 5, 10, 18] deg gives CL [-0.4, 0, 0.5, 1.0, 0.8]. These illustrate extrapolation failure; they are not measured aircraft data.",
+    "Test the endpoints and an out-of-range request.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each alpha in [-4, 0, 5, 10, 18]:\n  configured output = 0.1*alpha\n  comparison = 0.1*alpha\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.\nUse the explicitly supplied synthetic observations for the comparison trace.",
+    "Narrow the claim to the supplied interval."
+  ],
+  "variables": {
+    "alpha": 5
+  },
+  "fields": [
+    {
+      "id": "minimum",
+      "label": "Lower valid angle (deg)",
+      "type": "number",
+      "section": 5
+    },
+    {
+      "id": "maximum",
+      "label": "Upper valid angle (deg)",
+      "type": "number",
+      "section": 5
+    },
+    {
+      "id": "outside",
+      "label": "Decision at 18 deg",
+      "type": "select",
+      "options": [
+        "Insufficient model",
+        "Validated CL=1.8",
+        "Safe to fly"
+      ],
+      "section": 5
+    },
+    {
+      "id": "explanation5",
+      "section": 5,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "minimum",
+      "expected": -4,
+      "message": "Use the documented lower limit."
+    },
+    {
+      "field": "maximum",
+      "expected": 10,
+      "message": "Use the documented upper limit."
+    },
+    {
+      "field": "outside",
+      "expected": "Insufficient model",
+      "message": "A numerical extrapolation is not evidence outside the fitted interval."
+    }
+  ],
+  "hints": [
+    "The supplied fit is qualified only on the documented angle interval.",
+    "A plotted number outside that interval does not extend the evidence.",
+    "Use −4 to +10 degrees and “Insufficient model” for 18 degrees."
+  ],
+  "sweep": {
+    "variable": "alpha",
+    "values": [
+      -4,
+      0,
+      5,
+      10,
+      18
+    ],
+    "expression": "0.1*alpha",
+    "reference": "0.1*alpha",
+    "referenceValues": [
+      -0.4,
+      0,
+      0.5,
+      1,
+      0.8
+    ]
+  },
+  "codeCases": null
+}

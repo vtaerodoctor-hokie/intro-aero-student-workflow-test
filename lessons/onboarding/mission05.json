@@ -1,0 +1,89 @@
+{
+  "id": "mission05",
+  "number": 5,
+  "version": "1.0.0",
+  "title": "Expose a simplifying assumption",
+  "brief": "Compare a sea-level density assumption with a supplied high-altitude condition of rho=0.9 kg/m³. The reference is supplied data, not a computed atmosphere model.",
+  "missing": [
+    4
+  ],
+  "supplied": [
+    "Can the same lift estimate be used unchanged when density decreases?",
+    "L=0.5*rho*V^2*S*CL",
+    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 20 m²\nCL = 1.2 dimensionless",
+    "Lift in N at both supplied densities.",
+    null,
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "At fixed V, S and CL, lower density reduces lift.",
+    "5760 N at rho=1.2; 4320 N at rho=0.9.",
+    "Hold all variables except density constant.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each rho in [0.9, 1, 1.1, 1.2]:\n  configured output = 0.5*1.2*V^2*S*CL\n  comparison = 0.5*rho*V^2*S*CL\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Revise the unchanged-density estimate for the lower-density condition."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 20,
+    "CL": 1.2
+  },
+  "fields": [
+    {
+      "id": "assumption",
+      "label": "Assumption being tested",
+      "type": "select",
+      "options": [
+        "Density stays constant",
+        "Mass becomes zero",
+        "Speed is measured in kilograms"
+      ],
+      "section": 4
+    },
+    {
+      "id": "consequence",
+      "label": "Consequence at lower actual density",
+      "type": "select",
+      "options": [
+        "Lift is overestimated",
+        "Lift is underestimated",
+        "Lift is unchanged"
+      ],
+      "section": 4
+    },
+    {
+      "id": "explanation4",
+      "section": 4,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "assumption",
+      "expected": "Density stays constant",
+      "message": "Identify the simplification used in the baseline."
+    },
+    {
+      "field": "consequence",
+      "expected": "Lift is overestimated",
+      "message": "Lift is proportional to density when the other terms are fixed."
+    }
+  ],
+  "hints": [
+    "The reference changes density while the simplified estimate holds it fixed.",
+    "At the same speed, area and CL, lift is proportional to density.",
+    "Holding sea-level density at a lower-density condition overestimates lift."
+  ],
+  "sweep": {
+    "variable": "rho",
+    "values": [
+      0.9,
+      1,
+      1.1,
+      1.2
+    ],
+    "expression": "0.5*1.2*V^2*S*CL",
+    "reference": "0.5*rho*V^2*S*CL"
+  },
+  "codeCases": null
+}

@@ -1,0 +1,114 @@
+{
+  "id": "mission03",
+  "number": 3,
+  "version": "1.0.0",
+  "title": "Give the model usable inputs",
+  "brief": "Convert 72 km/h into SI speed and populate the lift calculator. Use a 500 kg aircraft, density 1.20 kg/m³, 20 m² area and CL=1.2.",
+  "missing": [
+    2
+  ],
+  "supplied": [
+    "Does the supplied lift capacity meet weight at this condition?",
+    "L=0.5*rho*V^2*S*CL; W=mass*g",
+    null,
+    "Lift, weight and lift-minus-weight in N.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Using 72 as m/s greatly overstates lift.",
+    "L=5760 N; W=4905 N; margin=855 N.",
+    "Check SI conversion and the supplied configuration.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each V in [10, 15, 20, 25]:\n  configured output = 0.5*rho*V^2*S*CL-mass*g\n  comparison = 0\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "The supplied lift capacity exceeds weight; this alone is not proof of trimmed flight."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 20,
+    "CL": 1.2,
+    "mass": 500,
+    "g": 9.81
+  },
+  "fields": [
+    {
+      "id": "V",
+      "label": "Speed (m/s)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "mass",
+      "label": "Mass (kg)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "S",
+      "label": "Area (m²)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "rho",
+      "label": "Density (kg/m³)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "CL",
+      "label": "Lift coefficient (dimensionless)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "explanation2",
+      "section": 2,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "V",
+      "expected": 20,
+      "message": "Match the supplied condition and convert units before running."
+    },
+    {
+      "field": "mass",
+      "expected": 500,
+      "message": "Match the supplied condition and convert units before running."
+    },
+    {
+      "field": "S",
+      "expected": 20,
+      "message": "Match the supplied condition and convert units before running."
+    },
+    {
+      "field": "rho",
+      "expected": 1.2,
+      "message": "Match the supplied condition and convert units before running."
+    },
+    {
+      "field": "CL",
+      "expected": 1.2,
+      "message": "Match the supplied condition and convert units before running."
+    }
+  ],
+  "hints": [
+    "Convert 72 km/h to m/s before using the force equation.",
+    "Divide km/h by 3.6; kg is a mass unit, not a force unit.",
+    "The SI speed is 20 m/s. Weight is mass*g, while lift uses density, area and CL."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      10,
+      15,
+      20,
+      25
+    ],
+    "expression": "0.5*rho*V^2*S*CL-mass*g",
+    "reference": "0"
+  },
+  "codeCases": null
+}

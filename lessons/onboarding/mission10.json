@@ -1,0 +1,94 @@
+{
+  "id": "mission10",
+  "number": 10,
+  "version": "1.0.0",
+  "title": "Specify a useful control panel",
+  "brief": "Configure a panel that distinguishes maximum elevator capacity from the commanded fraction.",
+  "missing": [
+    9
+  ],
+  "supplied": [
+    "Does a half command apply half of the declared available moment?",
+    "Applied=u*available; 0≤u≤1",
+    "u = 0.5 dimensionless\navailable = 4000 (declared parameter)",
+    "Available and applied moment in N m.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "Linear command mapping is a teaching approximation, not validated elevator aerodynamics.",
+    "A half command applies 2000 N m even though capacity remains 4000 N m.",
+    "At u=0.5 applied=2000 N m.",
+    "Test 0, 0.5, 1 and invalid commands.",
+    null,
+    "Supplied executable experiment recipe:\nFor each u in [0, 0.25, 0.5, 0.75, 1]:\n  configured output = u*available\n  comparison = available\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Keep capacity and applied command distinct."
+  ],
+  "variables": {
+    "u": 0.5,
+    "available": 4000
+  },
+  "fields": [
+    {
+      "id": "maximum",
+      "label": "Maximum normalized command",
+      "type": "number",
+      "section": 9
+    },
+    {
+      "id": "applied",
+      "label": "Displayed applied moment at half command (N m)",
+      "type": "number",
+      "section": 9
+    },
+    {
+      "id": "label",
+      "label": "Capacity label",
+      "type": "select",
+      "options": [
+        "Available capacity",
+        "Applied moment",
+        "Successful takeoff"
+      ],
+      "section": 9
+    },
+    {
+      "id": "explanation9",
+      "section": 9,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "maximum",
+      "expected": 1,
+      "message": "Use the specified normalized interval."
+    },
+    {
+      "field": "applied",
+      "expected": 2000,
+      "message": "Only the commanded fraction is applied."
+    },
+    {
+      "field": "label",
+      "expected": "Available capacity",
+      "message": "Do not label maximum capacity as the current applied moment."
+    }
+  ],
+  "hints": [
+    "The command fraction changes applied moment, not the actuator’s full capacity.",
+    "Half command means u=0.5; use the supplied capacity.",
+    "Half of 4000 N m is 2000 N m. The permitted command range ends at one."
+  ],
+  "sweep": {
+    "variable": "u",
+    "values": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "expression": "u*available",
+    "reference": "available"
+  },
+  "codeCases": null
+}

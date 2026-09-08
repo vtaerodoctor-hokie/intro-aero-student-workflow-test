@@ -1,0 +1,327 @@
+{
+  "id": "mission13",
+  "number": 13,
+  "version": "1.0.0",
+  "title": "Homework: establish a new flight-condition claim",
+  "brief": "For rho=1.2 kg/m³, V=25 m/s, S=16 m², CL capacity=1.0, Cd=0.04, mass=500 kg, g=9.81 m/s² and thrust=300 N: can lift capacity and available thrust meet their demands? This is a capacity check, not a solved trim state. Complete all twelve sections.",
+  "missing": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "supplied": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 25,
+    "S": 16,
+    "CL": 1,
+    "Cd": 0.04,
+    "mass": 500,
+    "g": 9.81,
+    "T": 300
+  },
+  "fields": [
+    {
+      "id": "question",
+      "label": "Your measurable engineering question",
+      "type": "text",
+      "section": 0
+    },
+    {
+      "id": "liftEquation",
+      "label": "Lift capacity equation (rho, V, S, CL)",
+      "type": "equation",
+      "section": 1
+    },
+    {
+      "id": "dragEquation",
+      "label": "Drag equation (rho, V, S, Cd)",
+      "type": "equation",
+      "section": 1
+    },
+    {
+      "id": "V",
+      "label": "Speed (m/s)",
+      "type": "number",
+      "section": 2
+    },
+    {
+      "id": "output",
+      "label": "Decision output",
+      "type": "select",
+      "section": 3,
+      "options": [
+        "Both lift and thrust margins",
+        "Aircraft color",
+        "Speed alone"
+      ]
+    },
+    {
+      "id": "assumption",
+      "label": "Identify the simplification",
+      "type": "select",
+      "section": 4,
+      "options": [
+        "Coefficients held fixed",
+        "All conditions validated"
+      ]
+    },
+    {
+      "id": "validity",
+      "label": "Supported scope",
+      "type": "select",
+      "section": 5,
+      "options": [
+        "Supplied steady condition",
+        "Takeoff and all maneuvers"
+      ]
+    },
+    {
+      "id": "prediction",
+      "label": "Drag ratio if speed doubles",
+      "type": "number",
+      "section": 6
+    },
+    {
+      "id": "lift",
+      "label": "Reference lift capacity (N)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "drag",
+      "label": "Reference drag (N)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "boundary",
+      "label": "Negative speed behavior",
+      "type": "select",
+      "section": 8,
+      "options": [
+        "Reject input",
+        "Accept input"
+      ]
+    },
+    {
+      "id": "unit",
+      "label": "Force output unit",
+      "type": "select",
+      "section": 9,
+      "options": [
+        "N",
+        "kg",
+        "m/s"
+      ]
+    },
+    {
+      "id": "code",
+      "label": "Implement function calculate(input) returning drag (N)",
+      "type": "code",
+      "section": 10
+    },
+    {
+      "id": "decision",
+      "label": "Decision for the bounded capacity question",
+      "type": "select",
+      "section": 11,
+      "options": [
+        "RETAIN",
+        "WITHDRAW"
+      ]
+    },
+    {
+      "id": "explanation0",
+      "section": 0,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation1",
+      "section": 1,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation2",
+      "section": 2,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation3",
+      "section": 3,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation4",
+      "section": 4,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation5",
+      "section": 5,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation6",
+      "section": 6,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation7",
+      "section": 7,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation8",
+      "section": 8,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation9",
+      "section": 9,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation10",
+      "section": 10,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    },
+    {
+      "id": "explanation11",
+      "section": 11,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "studentExpression": "liftEquation",
+      "expected": 6000,
+      "message": "Check lift capacity using the supplied condition."
+    },
+    {
+      "studentExpression": "dragEquation",
+      "expected": 240,
+      "message": "Check the drag relationship."
+    },
+    {
+      "field": "V",
+      "expected": 25,
+      "message": "Use the assigned condition."
+    },
+    {
+      "field": "output",
+      "expected": "Both lift and thrust margins",
+      "message": "Both constraints must be checked."
+    },
+    {
+      "field": "assumption",
+      "expected": "Coefficients held fixed",
+      "message": "State the fixed-coefficient assumption."
+    },
+    {
+      "field": "validity",
+      "expected": "Supplied steady condition",
+      "message": "Do not extend this capacity model to takeoff."
+    },
+    {
+      "field": "prediction",
+      "expected": 4,
+      "message": "Check quadratic speed scaling."
+    },
+    {
+      "field": "lift",
+      "expected": 6000,
+      "message": "Show an independent lift reference."
+    },
+    {
+      "field": "drag",
+      "expected": 240,
+      "message": "Show an independent drag reference."
+    },
+    {
+      "field": "boundary",
+      "expected": "Reject input",
+      "message": "Require invalid-speed rejection."
+    },
+    {
+      "field": "unit",
+      "expected": "N",
+      "message": "Output forces in newtons."
+    },
+    {
+      "field": "decision",
+      "expected": "RETAIN",
+      "message": "Both bounded capacity margins are positive."
+    }
+  ],
+  "hints": [
+    "Organize your work by the twelve sections and use SI units throughout.",
+    "Check lift against weight and thrust against drag separately.",
+    "Use the supplied condition and uncertainty limits to support a bounded decision, then test your implementation."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      15,
+      20,
+      25,
+      30
+    ],
+    "studentField": "dragEquation",
+    "reference": "T"
+  },
+  "codeCases": [
+    {
+      "input": {
+        "rho": 1.2,
+        "V": 25,
+        "S": 16,
+        "Cd": 0.04
+      },
+      "expected": 240
+    },
+    {
+      "input": {
+        "rho": 1.2,
+        "V": -1,
+        "S": 16,
+        "Cd": 0.04
+      },
+      "throws": true
+    }
+  ]
+}

@@ -27,3 +27,6 @@ yarn-error.log*
 # generated files
 /dist/
 /.codex-tmp/
+
+# Instructor session data: never publish
+/.instructor/private/

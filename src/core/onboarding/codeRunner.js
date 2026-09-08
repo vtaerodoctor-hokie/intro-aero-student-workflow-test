@@ -1,0 +1,11 @@
+export function runStudentCode(code,cases){return new Promise(resolve=>{
+ const source=`self.fetch=undefined;self.XMLHttpRequest=undefined;self.WebSocket=undefined;self.importScripts=undefined;self.onmessage=({data:p})=>{let results;try{const calculate=new Function(p.code.replace(/export\\s+default\\s+/g,'').replace(/export\\s+(?=function|const|let)/g,'')+';return calculate;')();results=p.cases.map((c,i)=>{try{const actual=calculate(Object.freeze(c.input));return {message:'Code case '+(i+1),expected:c.throws?'input rejection':c.expected,actual,passed:!c.throws&&Number.isFinite(actual)&&Math.abs(actual-c.expected)<1e-6};}catch(e){return {message:'Code case '+(i+1),actual:'input rejection',passed:Boolean(c.throws),error:String(e.message)}}});}catch(e){results=[{passed:false,message:'Code could not run',error:String(e.message)}];}postMessage(results);};`;
+ // Opaque-origin frame owns the worker; CSP blocks all network destinations.
+ const frame=document.createElement('iframe');frame.hidden=true;frame.setAttribute('sandbox','allow-scripts');const token=crypto.randomUUID();let timer;
+ function finish(results){clearTimeout(timer);window.removeEventListener('message',receive);frame.remove();resolve(results);}
+ function receive(e){if(e.source===frame.contentWindow&&e.data?.token===token)finish(e.data.results);}
+ window.addEventListener('message',receive);
+ const payload=JSON.stringify({code,cases,token,source}).replace(/</g,'\\u003c');
+ frame.srcdoc=`<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; worker-src blob:; connect-src 'none'"><script>const p=${payload};const u=URL.createObjectURL(new Blob([p.source],{type:'text/javascript'}));const w=new Worker(u);const t=setTimeout(()=>{w.terminate();parent.postMessage({token:p.token,results:[{passed:false,message:'Code exceeded the execution limit.'}]},'*')},1000);w.onmessage=e=>{clearTimeout(t);w.terminate();URL.revokeObjectURL(u);parent.postMessage({token:p.token,results:e.data},'*')};w.onerror=()=>{clearTimeout(t);w.terminate();parent.postMessage({token:p.token,results:[{passed:false,message:'Code worker failed.'}]},'*')};w.postMessage(p);<\/script>`;
+ timer=setTimeout(()=>finish([{passed:false,message:'The isolated code runner did not respond.'}]),2500);document.body.append(frame);
+});}

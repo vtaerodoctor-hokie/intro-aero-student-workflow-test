@@ -1,0 +1,86 @@
+{
+  "id": "mission07",
+  "number": 7,
+  "version": "1.0.0",
+  "title": "Predict before you sweep",
+  "brief": "Hold lift and dynamic pressure fixed. Predict the change in induced drag when span doubles.",
+  "missing": [
+    6
+  ],
+  "supplied": [
+    "How does span affect induced drag at fixed lift and condition?",
+    "Di=L^2/(pi*e*q*b^2)",
+    "L = 5000 N\npi = 3.141592653589793 (declared parameter)\ne = 0.8 dimensionless\nq = 240 Pa\nb = 10 m",
+    "Induced drag in N.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    null,
+    "Di at b=10 m is about 414.466 N; at b=20 m about 103.617 N.",
+    "Check the ratio at twice the span.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each b in [8, 10, 12, 16, 20]:\n  configured output = L^2/(pi*e*q*b^2)\n  comparison = L^2/(pi*e*q*b^2)\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "The reduced induced drag claim excludes structural weight and other design effects."
+  ],
+  "variables": {
+    "L": 5000,
+    "pi": 3.141592653589793,
+    "e": 0.8,
+    "q": 240,
+    "b": 10
+  },
+  "fields": [
+    {
+      "id": "direction",
+      "label": "Change when span doubles",
+      "type": "select",
+      "options": [
+        "Decreases",
+        "Increases",
+        "Unchanged"
+      ],
+      "section": 6
+    },
+    {
+      "id": "ratio",
+      "label": "New drag / original drag",
+      "type": "number",
+      "section": 6
+    },
+    {
+      "id": "explanation6",
+      "section": 6,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "direction",
+      "expected": "Decreases",
+      "message": "Span appears in the denominator."
+    },
+    {
+      "field": "ratio",
+      "expected": 0.25,
+      "message": "Apply the square of the span ratio."
+    }
+  ],
+  "hints": [
+    "Hold lift, dynamic pressure and efficiency constant when changing span.",
+    "Span appears squared in the denominator of this induced-drag model.",
+    "Doubling span gives one quarter of the original induced drag."
+  ],
+  "sweep": {
+    "variable": "b",
+    "values": [
+      8,
+      10,
+      12,
+      16,
+      20
+    ],
+    "expression": "L^2/(pi*e*q*b^2)",
+    "reference": "L^2/(pi*e*q*b^2)"
+  },
+  "codeCases": null
+}

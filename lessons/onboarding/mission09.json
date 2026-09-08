@@ -1,0 +1,96 @@
+{
+  "id": "mission09",
+  "number": 9,
+  "version": "1.0.0",
+  "title": "Catch a faulty calculator",
+  "brief": "The calculator may use V instead of V², omit the one-half factor, or accept negative speed. Specify tests that distinguish these errors.",
+  "missing": [
+    8
+  ],
+  "supplied": [
+    "Does the drag implementation obey its declared contract?",
+    "D=0.5*rho*V^2*S*Cd; reject V<0",
+    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 10 m²\nCd = 0.04 dimensionless",
+    "Test outcomes and which fault each case catches.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "A single check at zero speed cannot distinguish all faulty implementations.",
+    "At V=20 drag=96 N; doubling speed gives ratio=4.",
+    null,
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each V in [0, 10, 20, 30, 40]:\n  configured output = 0.5*rho*V*S*Cd\n  comparison = 0.5*rho*V^2*S*Cd\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Accept only implementations passing all three checks."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 10,
+    "Cd": 0.04
+  },
+  "fields": [
+    {
+      "id": "reference",
+      "label": "Expected drag at 20 m/s (N)",
+      "type": "number",
+      "section": 8
+    },
+    {
+      "id": "ratio",
+      "label": "Expected D(40)/D(20)",
+      "type": "number",
+      "section": 8
+    },
+    {
+      "id": "negative",
+      "label": "Expected behavior at negative speed",
+      "type": "select",
+      "options": [
+        "Reject input",
+        "Return positive drag",
+        "Return zero"
+      ],
+      "section": 8
+    },
+    {
+      "id": "explanation8",
+      "section": 8,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "reference",
+      "expected": 96,
+      "message": "This case catches a missing one-half factor."
+    },
+    {
+      "field": "ratio",
+      "expected": 4,
+      "message": "This test distinguishes quadratic from linear speed scaling."
+    },
+    {
+      "field": "negative",
+      "expected": "Reject input",
+      "message": "The contract requires rejection of negative speed."
+    }
+  ],
+  "hints": [
+    "One baseline case cannot distinguish every faulty implementation.",
+    "A doubled-speed case detects a missing square; negative speed probes rejection.",
+    "The baseline is 96 N, doubling speed gives a factor of four, and negative speed must be rejected."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      0,
+      10,
+      20,
+      30,
+      40
+    ],
+    "expression": "0.5*rho*V*S*Cd",
+    "reference": "0.5*rho*V^2*S*Cd"
+  },
+  "codeCases": null
+}

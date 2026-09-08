@@ -1,0 +1,113 @@
+{
+  "id": "mission01",
+  "number": 1,
+  "version": "1.0.0",
+  "title": "Ask a testable question",
+  "brief": "Define what the initial pitch experiment must establish. Choose a measurable response and an inclusive success threshold.",
+  "missing": [
+    0
+  ],
+  "supplied": [
+    null,
+    "available = 0.5*rho*V^2*S*c*dCm; required=Iy*target-other; acceleration=(available+other)/Iy",
+    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 27.25 m²\nc = 4 m\ndCm = 0.153 dimensionless\nIy = 5000 kg m²\nother = -750 N m\ntarget = 0.12 rad/s²\nmass = 900 kg (context; pitch response uses the declared pitch inertia)",
+    "Available and required moment (N m), margin (N m), acceleration (rad/s²).",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Increasing speed increases available moment quadratically.",
+    "Available 4002.48 N m; required 1350 N m; margin 2652.48 N m; full-command acceleration 0.650496 rad/s².",
+    "Test 20 and 10 m/s, include equality with the required acceleration.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each V in [10, 14, 20, 24]:\n  configured output = (0.5*rho*V^2*S*c*dCm+other)/Iy\n  comparison = target\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "The supplied baseline meets initial authority demand. No takeoff claim follows."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 20,
+    "S": 27.25,
+    "c": 4,
+    "dCm": 0.153,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12,
+    "threshold": 0.12,
+    "mass": 900
+  },
+  "fields": [
+    {
+      "id": "question",
+      "label": "Write the engineering question",
+      "type": "text",
+      "section": 0
+    },
+    {
+      "id": "quantity",
+      "label": "Measured response",
+      "type": "select",
+      "options": [
+        "Initial pitch acceleration",
+        "Takeoff distance",
+        "Crosswind controllability"
+      ],
+      "section": 0
+    },
+    {
+      "id": "threshold",
+      "label": "Required acceleration (rad/s²)",
+      "type": "number",
+      "section": 0
+    },
+    {
+      "id": "comparison",
+      "label": "Success criterion",
+      "type": "select",
+      "options": [
+        "At least the threshold",
+        "Strictly greater than the threshold",
+        "Below the threshold"
+      ],
+      "section": 0
+    },
+    {
+      "id": "explanation0",
+      "section": 0,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "quantity",
+      "expected": "Initial pitch acceleration",
+      "message": "This instrument measures initial pitch acceleration; it cannot establish takeoff distance or crosswind control."
+    },
+    {
+      "field": "threshold",
+      "expected": 0.12,
+      "message": "Use the specified response demand, not the observed capacity."
+    },
+    {
+      "field": "comparison",
+      "expected": "At least the threshold",
+      "message": "Equality satisfies an at-least requirement."
+    }
+  ],
+  "hints": [
+    "Name the response this model actually calculates. It has no takeoff-distance or crosswind model.",
+    "State the operating condition and 0.12 rad/s² demand in your question.",
+    "At least means >=: equality is sufficient. Separate demand from available acceleration."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      10,
+      14,
+      20,
+      24
+    ],
+    "expression": "(0.5*rho*V^2*S*c*dCm+other)/Iy",
+    "reference": "threshold",
+    "units": "Speed V in m/s; initial pitch acceleration in rad/s²."
+  },
+  "codeCases": null
+}

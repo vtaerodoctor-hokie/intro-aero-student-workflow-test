@@ -1,0 +1,102 @@
+{
+  "id": "mission12",
+  "number": 12,
+  "version": "1.0.0",
+  "title": "Defend a bounded decision",
+  "brief": "Configuration A needs 240 N drag; B needs 320 N. Available thrust is 300 N. The supplied drag estimates have ±10% uncertainty.",
+  "missing": [
+    11
+  ],
+  "supplied": [
+    "Which configuration meets the supplied thrust requirement, including the stated uncertainty?",
+    "Worst-case drag=1.1*D; margin=T-1.1*D",
+    "T = 300 N\nD = 240 (declared parameter)",
+    "Worst-case drag and thrust margin in N.",
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "A may remain feasible while B fails.",
+    "A worst-case margin=36 N. B worst-case margin=−52 N.",
+    "Compare both alternatives and the uncertainty bound.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each D in [240, 320]:\n  configured output = T-1.1*D\n  comparison = 0\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    null
+  ],
+  "variables": {
+    "T": 300,
+    "D": 240
+  },
+  "fields": [
+    {
+      "id": "configuration",
+      "label": "Configuration meeting the bound",
+      "type": "select",
+      "options": [
+        "A",
+        "B",
+        "Both"
+      ],
+      "section": 11
+    },
+    {
+      "id": "decision",
+      "label": "Decision",
+      "type": "select",
+      "options": [
+        "RETAIN",
+        "NARROW",
+        "REVISE",
+        "WITHDRAW"
+      ],
+      "section": 11
+    },
+    {
+      "id": "claim",
+      "label": "Claim boundary",
+      "type": "select",
+      "options": [
+        "Supplied condition only",
+        "All flight conditions",
+        "Aircraft certified safe"
+      ],
+      "section": 11
+    },
+    {
+      "id": "explanation11",
+      "section": 11,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "configuration",
+      "expected": "A",
+      "message": "Compare available thrust with the upper drag bound."
+    },
+    {
+      "field": "decision",
+      "expected": "RETAIN",
+      "message": "A supports retaining the bounded supplied-condition claim."
+    },
+    {
+      "field": "claim",
+      "expected": "Supplied condition only",
+      "message": "Do not expand the claim beyond the tested condition."
+    }
+  ],
+  "hints": [
+    "Use the larger drag from the uncertainty band for the reserve calculation.",
+    "Configuration A retains positive reserve; B does not.",
+    "Retain A only for the supplied condition. This calculation cannot establish all-flight safety."
+  ],
+  "sweep": {
+    "variable": "D",
+    "values": [
+      240,
+      320
+    ],
+    "expression": "T-1.1*D",
+    "reference": "0"
+  },
+  "codeCases": null
+}

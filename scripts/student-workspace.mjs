@@ -1,11 +1,15 @@
 import fs from 'node:fs';
+import {implementationFiles} from './onboarding-implementation.mjs';
+import {protection} from './onboarding-protection.mjs';
+import {classroom} from './classroom-client.mjs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { execFile } from 'node:child_process';
 import { execFileSync } from 'node:child_process';
 import { mission } from '../src/core/missions/manifest.js';
 import { digest, collect } from './mission-state.mjs';
-const paths=[...mission.stages.map(s=>`${mission.directory}/${s.file}`),...mission.implementationPaths,`${mission.directory}/evidence/records.json`];
+const onboardingPaths=Array.from({length:13},(_,i)=>`student-work/onboarding/mission${String(i+1).padStart(2,'0')}`);
+const paths=[... ['mission11','mission13'].flatMap(id=>['physics.js','feature.json','verification.json'].map(f=>`student-work/onboarding/implementation/${id}/${f}`)),...onboardingPaths.flatMap(p=>[p+'.json',p+'.md']),...mission.stages.map(s=>`${mission.directory}/${s.file}`),...mission.implementationPaths,`${mission.directory}/evidence/records.json`];
 export const editablePaths=new Set(paths);
 const git=(root,args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024}).trim();
 export function safeFile(root,name){
@@ -37,6 +41,23 @@ export function checkpoint(root,{name},run=git){
  run(root,['push','origin',`HEAD:refs/heads/${info.branch}`]);
  const revision=run(root,['rev-parse','HEAD']);return {revision,url:`${info.url}/commit/${revision}`};
 }
+export async function onboardingCheckpoint(root,input,run=git){
+     if(!/^mission(?:0[1-9]|1[0-3])$/.test(input.id))throw Error('Unknown mission.');
+     const info=repository(root);const guard=protection(root);if(!guard.passed)throw Error(guard.errors.join('; '));
+     const name=`student-work/onboarding/${input.id}.json`;
+     if(digest(readFile(root,name))!==input.expectedHash)throw Error('Your workspace changed. Reload before submitting.');
+     const saved=JSON.parse(readFile(root,name));
+     const lesson=JSON.parse(fs.readFileSync(path.join(root,'lessons/onboarding',input.id+'.json'),'utf8'));
+     const {markdown}=await import('../src/core/onboarding/engine.js');
+     const md=`student-work/onboarding/${input.id}.md`;
+     saveFile(root,{name:md,text:markdown(lesson,saved),expectedHash:digest(readFile(root,md))});
+     if(run(root,['diff','--cached','--name-only']))throw Error('Review existing staged changes before submitting.');
+     const exported=implementationFiles(input.id,saved,lesson);for(const [name,text] of Object.entries(exported))saveFile(root,{name,text,expectedHash:digest(readFile(root,name))});
+     run(root,['add','--',name,md,...Object.keys(exported)]);
+     if(run(root,['diff','--cached','--name-only']))run(root,['commit','-m',`Onboarding attempt: ${input.id}`]);
+     run(root,['push','origin',`HEAD:refs/heads/${info.branch}`]);
+ return {revision:run(root,['rev-parse','HEAD']),url:info.url};
+}
 export function studentWorkspacePlugin(){let root,busy=false;return {name:'student-workspace',configResolved(c){root=c.root;},configureServer(server){
  server.middlewares.use('/api/student',async(req,res)=>{
   res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');
@@ -44,16 +65,21 @@ export function studentWorkspacePlugin(){let root,busy=false;return {name:'stude
   if(process.env.LAB_STUDENT_WORKSPACE!=='1')return reply(403,{error:'Open this lab using npm run student. Student saving is disabled in this preview.'});
   try{
    const info=repository(root);
-   if(req.method==='GET'&&req.url==='/state')return reply(200,{repository:info,files:Object.fromEntries(paths.map(p=>[p,{text:readFile(root,p),hash:digest(readFile(root,p))}])),mission:collect(root)});
+   if(req.method==='GET'&&req.url==='/classroom')return reply(200,await classroom(root,`${info.owner}/${info.repo}`));
+   if(req.method==='GET'&&req.url==='/state')return reply(200,{repository:info,onboardingProtection:protection(root),files:Object.fromEntries(paths.map(p=>[p,{text:readFile(root,p),hash:digest(readFile(root,p))}])),mission:collect(root)});
    const origin=req.headers.origin;
    if(req.method!=='POST'||!origin||new URL(origin).host!==req.headers.host||req.headers['x-student-workspace']!=='1')return reply(403,{error:'Only requests from this lab window can save work.'});
    if(busy)return reply(409,{error:'A save is already in progress. Please retry.'});
    busy=true;
    try{let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>220000)throw Error('Request too large.');}const input=JSON.parse(body);
+    if(req.url==='/classroom-connect')return reply(200,await classroom(root,`${info.owner}/${info.repo}`,input));
     if(req.url==='/verify'){
      const run=promisify(execFile);const results=[];
      for(const command of ['test','build']){try{const {stdout,stderr}=await run('npm',['run',command],{cwd:root,timeout:120000,maxBuffer:2*1024*1024});results.push({command,passed:true,output:(stdout+stderr).slice(-16000)});}catch(e){results.push({command,passed:false,output:((e.stdout||'')+(e.stderr||'')||e.message).slice(-16000)});}}
      return reply(200,{results,notice:'Local checks only. Independent instructor verification is not installed in this test shell.'});
+    }
+    if(req.url==='/onboarding-submit'){
+     return reply(200,await onboardingCheckpoint(root,input));
     }
     if(req.url==='/save')return reply(200,saveFile(root,input));
     if(req.url==='/checkpoint')return reply(200,checkpoint(root,input));

@@ -1,0 +1,102 @@
+{
+  "id": "mission04",
+  "number": 4,
+  "version": "1.0.0",
+  "title": "Measure the right result",
+  "brief": "Configure the thrust–drag instrument so the engineering requirement can be decided.",
+  "missing": [
+    3
+  ],
+  "supplied": [
+    "Is 300 N available thrust sufficient against the modeled drag?",
+    "D=0.5*rho*V^2*S*Cd; margin=T-D",
+    "rho = 1.2 kg/m³\nV = 30 m/s\nS = 10 m²\nCd = 0.04 dimensionless\nT = 300 N",
+    null,
+    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "Greater speed reduces margin for constant thrust.",
+    "D=216 N; margin=84 N.",
+    "Compare available thrust with required drag at 30 and 40 m/s.",
+    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
+    "Supplied executable experiment recipe:\nFor each V in [20, 25, 30, 35, 40]:\n  configured output = T-0.5*rho*V^2*S*Cd\n  comparison = 0\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Retain the 30 m/s capacity claim; 40 m/s exceeds the constant available thrust."
+  ],
+  "variables": {
+    "rho": 1.2,
+    "V": 30,
+    "S": 10,
+    "Cd": 0.04,
+    "T": 300
+  },
+  "fields": [
+    {
+      "id": "output",
+      "label": "Decision output",
+      "type": "select",
+      "options": [
+        "Thrust minus drag",
+        "Aircraft mass",
+        "Wing span"
+      ],
+      "section": 3
+    },
+    {
+      "id": "unit",
+      "label": "Output unit",
+      "type": "select",
+      "options": [
+        "N",
+        "kg",
+        "m/s"
+      ],
+      "section": 3
+    },
+    {
+      "id": "threshold",
+      "label": "Minimum acceptable margin (N)",
+      "type": "number",
+      "section": 3
+    },
+    {
+      "id": "explanation3",
+      "section": 3,
+      "label": "Explain your engineering reasoning",
+      "type": "text"
+    }
+  ],
+  "checks": [
+    {
+      "field": "output",
+      "expected": "Thrust minus drag",
+      "message": "A capacity decision requires comparing supply and demand."
+    },
+    {
+      "field": "unit",
+      "expected": "N",
+      "message": "Thrust and drag are forces."
+    },
+    {
+      "field": "threshold",
+      "expected": 0,
+      "message": "Nonnegative margin means thrust meets modeled drag."
+    }
+  ],
+  "hints": [
+    "A reserve is the available quantity minus the demand.",
+    "Thrust and drag both have units of newtons; subtract drag from thrust.",
+    "Use thrust minus drag, N, and a zero minimum reserve."
+  ],
+  "sweep": {
+    "variable": "V",
+    "values": [
+      20,
+      25,
+      30,
+      35,
+      40
+    ],
+    "expression": "T-0.5*rho*V^2*S*Cd",
+    "reference": "0"
+  },
+  "codeCases": null
+}
