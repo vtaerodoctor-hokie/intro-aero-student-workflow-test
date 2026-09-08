@@ -1,10 +1,10 @@
-# Aircraft engineering onboarding game
+# Chapter 6 — Control-authority onboarding game
 
-Start with **Onboarding game**: twelve short missions, each with eleven supplied sections and one section for you to complete. Each mission unlocks its own experiment. A thirteenth homework mission asks you to build the whole specification.
+Start with **Onboarding game**: twelve short missions, each with eleven supplied sections and one section for you to complete. Each mission unlocks its own control-authority experiment, from pitch response and asymmetric-thrust yaw to actuator limits and crosswind evidence. A thirteenth homework mission asks you to build the whole specification.
 
 Fork this repository, create a Codespace, and open port **5173**. If needed, run `npm run student` in its terminal. Your drafts save in the Codespace; **Submit attempt to GitHub** commits and pushes them to your fork.
 
-[Student walkthrough and instructor classroom setup](docs/ONBOARDING-CLASSROOM.md)
+[Chapter 6 mission map](docs/CHAPTER06-GAME-MAP.md) · [Student walkthrough and instructor classroom setup](docs/ONBOARDING-CLASSROOM.md)
 
 The instructor dashboard can discover public forks and review submitted commits using your existing GitHub login. Run `npm run instructor`; no GitHub App is needed for public-fork monitoring. No AI subscription or local student installation is required.
 

@@ -1,96 +1,132 @@
 {
   "id": "mission09",
   "number": 9,
-  "version": "1.0.0",
-  "title": "Catch a faulty calculator",
-  "brief": "The calculator may use V instead of V², omit the one-half factor, or accept negative speed. Specify tests that distinguish these errors.",
+  "version": "2.0.0",
+  "title": "Catch an unsafe authority calculator",
+  "chapter": "§6.7–6.8 — reproducible verification",
+  "brief": "Write verification expectations that expose control-authority bugs. The plotted candidate deliberately uses the wrong opposing-moment sign.",
   "missing": [
     8
   ],
   "supplied": [
-    "Does the drag implementation obey its declared contract?",
-    "D=0.5*rho*V^2*S*Cd; reject V<0",
-    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 10 m²\nCd = 0.04 dimensionless",
-    "Test outcomes and which fault each case catches.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "A single check at zero speed cannot distinguish all faulty implementations.",
-    "At V=20 drag=96 N; doubling speed gives ratio=4.",
+    "Which tests distinguish a correct pitch-authority calculator from a wrong opposing-moment sign, linear speed scaling, or input acceptance bug?",
+    "M_available=0.5*rho*V²*S*c*dCm; M_required=Iy*target-other; margin=M_available-M_required; initial acceleration=(M_available+other)/Iy at full command.",
+    "900 kg trainer; rho=1.20 kg/m³; V=20 m/s; S=27.25 m²; c=4 m; usable dCm=0.153; Iy=5000 kg m²; other=-750 N m; target=0.12 rad/s². Nose-up moment is positive about the declared CG.",
+    "Numerical verification cases, speed ratio, boundary rejection and insufficient-authority detection.",
+    "All reference cases use the same sign convention and compatible reference dimensions. Cases intentionally probe independent implementation errors.",
+    "Initial single-axis pitch screen at the declared condition. Constant coefficients and inertia. No proof of successful takeoff, ground clearance, stall recovery, or safe landing.",
+    "A baseline-only test is inadequate. Zero usable coefficient must leave a negative margin when positive control demand remains.",
+    "Baseline required=1350 N m; capacity=4002.48 N m. M_available(40)/M_available(20)=4. At dCm=0, margin=-1350 N m.",
     null,
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each V in [0, 10, 20, 30, 40]:\n  configured output = 0.5*rho*V*S*Cd\n  comparison = 0.5*rho*V^2*S*Cd\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "Accept only implementations passing all three checks."
+    "Show why each test matters and identify malformed inputs separately from physically insufficient but valid cases.",
+    "Run the supplied correct and faulty candidate equations over zero coefficient, lower speed, sign reversal, and invalid inertia. No aircraft flight is simulated.",
+    "Accept only an implementation that preserves sign conventions, quadratic scaling, units, and input validation; a valid negative margin is a result, not a crash."
   ],
   "variables": {
     "rho": 1.2,
     "V": 20,
-    "S": 10,
-    "Cd": 0.04
+    "S": 27.25,
+    "c": 4,
+    "dCm": 0.153,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12
   },
   "fields": [
     {
-      "id": "reference",
-      "label": "Expected drag at 20 m/s (N)",
+      "id": "required",
+      "label": "Expected required moment with other=-750 (N m)",
       "type": "number",
       "section": 8
     },
     {
       "id": "ratio",
-      "label": "Expected D(40)/D(20)",
+      "label": "Expected available(40 m/s)/available(20 m/s)",
       "type": "number",
       "section": 8
     },
     {
-      "id": "negative",
-      "label": "Expected behavior at negative speed",
+      "id": "zero",
+      "label": "Expected margin when usable dCm=0 (N m)",
+      "type": "number",
+      "section": 8
+    },
+    {
+      "id": "invalid",
+      "label": "Expected behavior for Iy=0",
       "type": "select",
       "options": [
-        "Reject input",
-        "Return positive drag",
-        "Return zero"
+        "Reject invalid input",
+        "Return infinite acceleration"
+      ],
+      "section": 8
+    },
+    {
+      "id": "negativeMargin",
+      "label": "Expected behavior for valid insufficient authority",
+      "type": "select",
+      "options": [
+        "Return negative margin",
+        "Reject the case as malformed"
       ],
       "section": 8
     },
     {
       "id": "explanation8",
-      "section": 8,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for verification cases",
+      "type": "text",
+      "section": 8
     }
   ],
   "checks": [
     {
-      "field": "reference",
-      "expected": 96,
-      "message": "This case catches a missing one-half factor."
+      "field": "required",
+      "expected": 1350,
+      "message": "This catches adding other with the wrong sign.",
+      "tolerance": 1e-06
     },
     {
       "field": "ratio",
       "expected": 4,
-      "message": "This test distinguishes quadratic from linear speed scaling."
+      "message": "This catches replacing V² with V.",
+      "tolerance": 1e-06
     },
     {
-      "field": "negative",
-      "expected": "Reject input",
-      "message": "The contract requires rejection of negative speed."
+      "field": "zero",
+      "expected": -1350,
+      "message": "Zero authority cannot satisfy a positive control demand.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "invalid",
+      "expected": "Reject invalid input",
+      "message": "A finite positive inertia is required for the response model.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "negativeMargin",
+      "expected": "Return negative margin",
+      "message": "An insufficient but valid condition must remain inspectable.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "One baseline case cannot distinguish every faulty implementation.",
-    "A doubled-speed case detects a missing square; negative speed probes rejection.",
-    "The baseline is 96 N, doubling speed gives a factor of four, and negative speed must be rejected."
+    "Do not lose the minus sign in Iy*target-other.",
+    "The zero-coefficient test should produce a finite negative margin, not a runtime error.",
+    "Use separate tests for numerical correctness, insufficient margin, and malformed input."
   ],
   "sweep": {
-    "variable": "V",
+    "variable": "other",
     "values": [
+      -2000,
+      -750,
       0,
-      10,
-      20,
-      30,
-      40
+      300
     ],
-    "expression": "0.5*rho*V*S*Cd",
-    "reference": "0.5*rho*V^2*S*Cd"
+    "expression": "Iy*target+other",
+    "reference": "Iy*target-other",
+    "units": "Other signed moment in N m; required control moment in N m. Configured curve is deliberately faulty."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

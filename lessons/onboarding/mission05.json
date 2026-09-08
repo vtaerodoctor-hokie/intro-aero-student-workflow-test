@@ -1,89 +1,111 @@
 {
   "id": "mission05",
   "number": 5,
-  "version": "1.0.0",
-  "title": "Expose a simplifying assumption",
-  "brief": "Compare a sea-level density assumption with a supplied high-altitude condition of rho=0.9 kg/m³. The reference is supplied data, not a computed atmosphere model.",
+  "version": "2.0.0",
+  "title": "Challenge the local-flow assumption",
+  "chapter": "§6.4, §6.6, §6.9 — local flow and compatible conditions",
+  "brief": "Audit the freestream-equals-local-flow assumption. Use explicit teaching factors to see how a favorable baseline can lose margin.",
   "missing": [
     4
   ],
   "supplied": [
-    "Can the same lift estimate be used unchanged when density decreases?",
-    "L=0.5*rho*V^2*S*CL",
-    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 20 m²\nCL = 1.2 dimensionless",
-    "Lift in N at both supplied densities.",
+    "Can the freestream-based trainer authority estimate be reused when the control effector sees slower local flow?",
+    "M_baseline=0.5*rho*V²*S*c*dCm; M_local=0.5*rho*(flowFactor*V)²*S*c*dCm. Required control moment remains 1350 N m.",
+    "900 kg trainer; rho=1.20 kg/m³; V=20 m/s; S=27.25 m²; c=4 m; usable dCm=0.153; Iy=5000 kg m²; other=-750 N m; target=0.12 rad/s². Nose-up moment is positive about the declared CG. Teaching sensitivity parameter flowFactor=0.7; it is not a measured tail-flow value.",
+    "Freestream-based capacity, local-flow sensitivity capacity, and whether each exceeds 1350 N m.",
     null,
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "At fixed V, S and CL, lower density reduces lift.",
-    "5760 N at rho=1.2; 4320 N at rho=0.9.",
-    "Hold all variables except density constant.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each rho in [0.9, 1, 1.1, 1.2]:\n  configured output = 0.5*1.2*V^2*S*CL\n  comparison = 0.5*rho*V^2*S*CL\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "Revise the unchanged-density estimate for the lower-density condition."
+    "This factor study isolates speed sensitivity; real local flow may also change the usable coefficient. It does not independently validate tail aerodynamics.",
+    "A 0.7 local-speed factor gives 0.49 of the baseline capacity. A 0.5 factor may remove sufficient authority.",
+    "At 0.7: available=1961.2152 N m and margin=611.2152 N m. At 0.5: available=1000.62 N m and margin=-349.38 N m.",
+    "Compare factors 1, 0.7 and 0.5 with unchanged density, geometry, usable coefficient and moment demand.",
+    "Label the factor as a teaching assumption. Show baseline, adjusted capacity, demand and limitations.",
+    "At each flowFactor evaluate the two equations above; preserve the declared configuration and required moment.",
+    "Request local-flow and coefficient evidence at the limiting alpha, flap/power state and loading; do not claim the freestream estimate is universally valid."
   ],
   "variables": {
     "rho": 1.2,
     "V": 20,
-    "S": 20,
-    "CL": 1.2
+    "S": 27.25,
+    "c": 4,
+    "dCm": 0.153,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12,
+    "flowFactor": 0.7
   },
   "fields": [
     {
       "id": "assumption",
-      "label": "Assumption being tested",
+      "label": "Assumption in the unadjusted estimate",
       "type": "select",
       "options": [
-        "Density stays constant",
-        "Mass becomes zero",
-        "Speed is measured in kilograms"
+        "Effector local speed equals freestream",
+        "Control moment is independent of speed",
+        "Pitch inertia is zero"
       ],
       "section": 4
     },
     {
       "id": "consequence",
-      "label": "Consequence at lower actual density",
+      "label": "If local flow is slower, unchanged estimate…",
       "type": "select",
       "options": [
-        "Lift is overestimated",
-        "Lift is underestimated",
-        "Lift is unchanged"
+        "Overestimates available authority",
+        "Underestimates available authority",
+        "Proves the tail is valid"
       ],
       "section": 4
     },
     {
+      "id": "ratio",
+      "label": "Capacity ratio for local speed factor 0.7",
+      "type": "number",
+      "section": 4
+    },
+    {
       "id": "explanation4",
-      "section": 4,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for assumptions",
+      "type": "text",
+      "section": 4
     }
   ],
   "checks": [
     {
       "field": "assumption",
-      "expected": "Density stays constant",
-      "message": "Identify the simplification used in the baseline."
+      "expected": "Effector local speed equals freestream",
+      "message": "Identify which speed entered dynamic pressure.",
+      "tolerance": 1e-06
     },
     {
       "field": "consequence",
-      "expected": "Lift is overestimated",
-      "message": "Lift is proportional to density when the other terms are fixed."
+      "expected": "Overestimates available authority",
+      "message": "Slower local flow reduces this held-coefficient moment estimate.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "ratio",
+      "expected": 0.49,
+      "message": "Square the local-speed ratio while holding other terms fixed.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "The reference changes density while the simplified estimate holds it fixed.",
-    "At the same speed, area and CL, lift is proportional to density.",
-    "Holding sea-level density at a lower-density condition overestimates lift."
+    "The speed entering the coefficient model must match the effector evidence.",
+    "Moment scales with speed squared only while the other terms remain fixed.",
+    "0.7²=0.49. Propwash may help and wake/separation may hurt; neither is validated by this factor study."
   ],
   "sweep": {
-    "variable": "rho",
+    "variable": "flowFactor",
     "values": [
-      0.9,
-      1,
-      1.1,
-      1.2
+      0.5,
+      0.7,
+      0.85,
+      1
     ],
-    "expression": "0.5*1.2*V^2*S*CL",
-    "reference": "0.5*rho*V^2*S*CL"
+    "expression": "0.5*rho*(flowFactor*V)^2*S*c*dCm",
+    "reference": "Iy*target-other",
+    "units": "Local speed factor dimensionless; available and required moment in N m."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

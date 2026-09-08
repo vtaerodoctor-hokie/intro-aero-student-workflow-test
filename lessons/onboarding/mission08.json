@@ -1,78 +1,129 @@
 {
   "id": "mission08",
   "number": 8,
-  "version": "1.0.0",
-  "title": "Calculate a trustworthy reference",
-  "brief": "A perpendicular 250 N force acts at a 0.8 m arm. Positive force produces positive moment.",
+  "version": "2.0.0",
+  "title": "Back-check the trainer moment budget",
+  "chapter": "§6.1, §6.4, §6.9 — sign, dimensions and force scale",
+  "brief": "Reproduce the chapter trainer budget independently, then check the equivalent force using an explicitly assumed arm.",
   "missing": [
     7
   ],
   "supplied": [
-    "What moment does the applied force generate?",
-    "M=F*arm",
-    "F = 250 N\narm = 0.8 m",
-    "Moment in N m.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "Doubling force doubles moment.",
+    "Can an independent reference calculation reproduce the trainer pitch margin and expose the implied force scale?",
+    "M_available=0.5*rho*V²*S*c*dCm; M_required=Iy*target-other; margin=M_available-M_required; initial acceleration=(M_available+other)/Iy at full command. Equivalent-force order check: F_equiv=M_available/arm.",
+    "900 kg trainer; rho=1.20 kg/m³; V=20 m/s; S=27.25 m²; c=4 m; usable dCm=0.153; Iy=5000 kg m²; other=-750 N m; target=0.12 rad/s². Nose-up moment is positive about the declared CG. For the order check only, assume a perpendicular arm of 4.0 m.",
+    "Required and available moment, nominal margin (N m), and equivalent force scale (N).",
+    "The coefficient uses aircraft reference area and chord. The assumed arm is not a validated tail geometry or aerodynamic model.",
+    "Initial single-axis pitch screen at the declared condition. Constant coefficients and inertia. No proof of successful takeoff, ground clearance, stall recovery, or safe landing.",
+    "A negative opposing moment increases the required control moment; the equivalent-force calculation is a scale check, not independent aerodynamic validation.",
     null,
-    "Check zero force, sign reversal, and arm scaling.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each F in [-250, 0, 125, 250, 500]:\n  configured output = F*arm\n  comparison = F*arm\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "Retain the perpendicular-force moment claim."
+    "Check 5000×0.12−(-750)=1350; q=240 Pa; q*S*c*dCm=4002.48; margin=2652.48; force scale=1000.62 N.",
+    "Label equivalent force with its assumed arm; distinguish exact arithmetic from rounded chapter reporting.",
+    "Compute the trainer budget, then divide available moment by each displayed assumed arm to inspect scale sensitivity.",
+    "Retain the nominal arithmetic screen; independently establish coefficient applicability, actual local flow, arm and actuator constraints."
   ],
   "variables": {
-    "F": 250,
-    "arm": 0.8
+    "rho": 1.2,
+    "V": 20,
+    "S": 27.25,
+    "c": 4,
+    "dCm": 0.153,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12,
+    "arm": 4
   },
   "fields": [
     {
-      "id": "moment",
-      "label": "Reference moment (N m)",
+      "id": "required",
+      "label": "Reference required moment (N m)",
       "type": "number",
       "section": 7
     },
     {
-      "id": "knm",
-      "label": "Same moment (kN m)",
+      "id": "available",
+      "label": "Reference available moment (N m)",
       "type": "number",
+      "section": 7
+    },
+    {
+      "id": "margin",
+      "label": "Reference margin (N m)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "force",
+      "label": "Equivalent force for assumed 4 m arm (N)",
+      "type": "number",
+      "section": 7
+    },
+    {
+      "id": "meaning",
+      "label": "What the force calculation establishes",
+      "type": "select",
+      "options": [
+        "Order-of-magnitude check only",
+        "Independent tail-aerodynamics validation"
+      ],
       "section": 7
     },
     {
       "id": "explanation7",
-      "section": 7,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for manual reference",
+      "type": "text",
+      "section": 7
     }
   ],
   "checks": [
     {
-      "field": "moment",
-      "expected": 200,
-      "message": "Multiply the perpendicular force by the arm."
+      "field": "required",
+      "expected": 1350,
+      "message": "Subtract the negative opposing moment.",
+      "tolerance": 1e-06
     },
     {
-      "field": "knm",
-      "expected": 0.2,
-      "message": "There are 1,000 N m in one kN m."
+      "field": "available",
+      "expected": 4002.48,
+      "message": "Use dynamic pressure 240 Pa and the aircraft reference dimensions.",
+      "tolerance": 0.01
+    },
+    {
+      "field": "margin",
+      "expected": 2652.48,
+      "message": "Subtract compatible required moment from available moment.",
+      "tolerance": 0.01
+    },
+    {
+      "field": "force",
+      "expected": 1000.62,
+      "message": "Divide by the explicitly assumed 4 m arm.",
+      "tolerance": 0.01
+    },
+    {
+      "field": "meaning",
+      "expected": "Order-of-magnitude check only",
+      "message": "Rearranging the same estimate is not independent validation.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "The moment arm is perpendicular to the force.",
-    "Multiply 250 N by 0.8 m, then convert N m into kN m.",
-    "200 N m equals 0.2 kN m. Preserve the declared nose-up sign."
+    "Required moment is Iy*target-other; other is already signed.",
+    "q=240 Pa and q*S*c*dCm=4002.48 N m.",
+    "Dividing by 4 m gives 1000.62 N; this checks scale, not tail validity."
   ],
   "sweep": {
-    "variable": "F",
+    "variable": "arm",
     "values": [
-      -250,
-      0,
-      125,
-      250,
-      500
+      2,
+      3,
+      4,
+      5
     ],
-    "expression": "F*arm",
-    "reference": "F*arm"
+    "expression": "0.5*rho*V^2*S*c*dCm/arm",
+    "reference": "1000.62",
+    "units": "Assumed perpendicular arm in m; equivalent force in N."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

@@ -1,6 +1,6 @@
 # Aircraft onboarding pilot
 
-This separate test repository contains twelve training missions and a thirteenth homework capstone. It does not publish the private Week 5 trim-response solution or the private Week 6 reference implementation.
+This separate test repository contains twelve Chapter 6 control-authority missions and a changed-crosswind homework capstone. See [the chapter mapping](CHAPTER06-GAME-MAP.md). Release 2.0 replaces the earlier general-aerodynamics exercises and invalidates their old results while retaining the answer files. It does not publish the private Week 5 trim-response solution or the private Week 6 reference implementation.
 
 ## Student workflow
 

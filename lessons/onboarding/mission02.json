@@ -1,88 +1,108 @@
 {
   "id": "mission02",
   "number": 2,
-  "version": "1.0.0",
-  "title": "Connect speed to drag",
-  "brief": "Write an equation using rho, V, S, and Cd. The wind-tunnel comparison holds geometry and coefficients fixed.",
+  "version": "2.0.0",
+  "title": "Choose the yaw-moment model",
+  "chapter": "§6.1, §6.2, §6.6, §6.9 Transfer B",
+  "brief": "Model an asymmetric-thrust disturbance and connect it to the correct effector. Read the supplied effector map and distinguish yaw from pitch and roll.",
   "missing": [
     1
   ],
   "supplied": [
-    "How does drag change with speed for a fixed coefficient?",
+    "For a separate twin-engine utility aircraft, can 8.6 kN m of usable opposing rudder/vertical-tail moment balance the yaw disturbance after losing 2.4 kN thrust at a 3.1 m lateral offset?",
     null,
-    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 10 m²\nCd = 0.04 dimensionless",
-    "Drag D in N.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "Doubling speed multiplies drag by four.",
-    "At 20 m/s drag=96 N; at 40 m/s drag=384 N.",
-    "Check both speeds, zero speed, and coefficient scaling.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each V in [0, 10, 20, 30, 40]:\n  configured output = the expression supplied in your Physics model section\n  comparison = 0.5*rho*V^2*S*Cd\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "Retain the fixed-coefficient drag relation within this supplied condition."
+    "deltaT=2400 N of lost thrust magnitude; y=3.1 m perpendicular lateral arm about the CG; available=8600 N m opposing yaw-moment magnitude. This is not the trainer aircraft.",
+    "Required yaw-moment magnitude (N m), available-minus-required margin (N m), and the appropriate primary effector.",
+    "Offset thrust creates yaw demand. Rudder primarily controls yaw but may couple to roll; ailerons primarily roll and can cause adverse yaw. Elevator primarily pitches. Flaps change lift/drag and pitching moment; spoilers change lift/drag and may roll; propulsion contributes forces and moments. These are dominant, not exclusive, responses.",
+    "Static yaw balance only. No proof of engine-out controllability, bank limits, transient response, or minimum control speed.",
+    "Doubling lost thrust at fixed arm doubles yaw demand and reduces margin.",
+    "2400×3.1=7440 N m required; 8600−7440=1160 N m nominal margin.",
+    "Zero loss → zero demand; 2400 N loss →7440 N m; 4800 N loss →14880 N m.",
+    "Plot yaw demand against lost thrust and compare with 8600 N m capacity; identify the yaw effector and the sign/magnitude convention.",
+    "For each deltaT, evaluate your expression using y=3.1; compare its result with deltaT*y. The capacity line remains 8600 N m.",
+    "Retain only the nominal static yaw screen; investigate coupling, actuator limits, and uncertainty before an operational claim."
   ],
   "variables": {
-    "rho": 1.2,
-    "V": 20,
-    "S": 10,
-    "Cd": 0.04
+    "deltaT": 2400,
+    "y": 3.1,
+    "available": 8600
   },
   "fields": [
     {
       "id": "equation",
-      "label": "D = (use rho, V, S, Cd)",
+      "label": "Required yaw-moment magnitude = (use deltaT, y)",
       "type": "equation",
       "section": 1
     },
     {
+      "id": "effector",
+      "label": "Primary opposing yaw effector",
+      "type": "select",
+      "options": [
+        "Rudder / vertical tail",
+        "Elevator",
+        "Symmetric flaps"
+      ],
+      "section": 1
+    },
+    {
       "id": "explanation1",
-      "section": 1,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for physics model",
+      "type": "text",
+      "section": 1
     }
   ],
   "checks": [
     {
       "studentExpression": "equation",
       "variables": {
-        "V": 0
+        "deltaT": 0
       },
-      "expected": 0,
-      "message": "At 0 m/s the declared drag relationship gives 0 N."
+      "expected": 0.0,
+      "message": "Lost thrust 0 N at 3.1 m must give 0 N m yaw demand."
     },
     {
       "studentExpression": "equation",
       "variables": {
-        "V": 20
+        "deltaT": 2400
       },
-      "expected": 96,
-      "message": "At 20 m/s the declared drag relationship gives 96 N."
+      "expected": 7440.0,
+      "message": "Lost thrust 2400 N at 3.1 m must give 7440 N m yaw demand."
     },
     {
       "studentExpression": "equation",
       "variables": {
-        "V": 40
+        "deltaT": 4800
       },
-      "expected": 384,
-      "message": "At 40 m/s the declared drag relationship gives 384 N."
+      "expected": 14880.0,
+      "message": "Lost thrust 4800 N at 3.1 m must give 14880 N m yaw demand."
+    },
+    {
+      "field": "effector",
+      "expected": "Rudder / vertical tail",
+      "message": "Select the yaw effector; identify roll coupling in your explanation.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "Dynamic pressure contains speed squared. Check the units of rho*V².",
-    "Double speed while holding density, area and Cd fixed. Drag should quadruple.",
-    "Use 0.5*rho*V^2*S*Cd. Explain why a linear-speed expression fails the sweep."
+    "A thrust loss off the centerline creates a moment about the CG.",
+    "Multiply force magnitude by the perpendicular lateral arm; the result is in N m.",
+    "Use deltaT*y. Rudder primarily opposes yaw; do not use elevator pitch authority as evidence for this case."
   ],
   "sweep": {
-    "variable": "V",
+    "variable": "deltaT",
     "values": [
       0,
-      10,
-      20,
-      30,
-      40
+      1200,
+      2400,
+      3600,
+      4800
     ],
-    "studentField": "equation",
-    "reference": "0.5*rho*V^2*S*Cd"
+    "expression": null,
+    "reference": "available",
+    "units": "Lost thrust in N; yaw moment in N m.",
+    "studentField": "equation"
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

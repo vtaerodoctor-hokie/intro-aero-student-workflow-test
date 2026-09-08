@@ -1,7 +1,7 @@
 {
   "id": "mission01",
   "number": 1,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "title": "Ask a testable question",
   "brief": "Define what the initial pitch experiment must establish. Choose a measurable response and an inclusive success threshold.",
   "missing": [
@@ -10,15 +10,15 @@
   "supplied": [
     null,
     "available = 0.5*rho*V^2*S*c*dCm; required=Iy*target-other; acceleration=(available+other)/Iy",
-    "rho = 1.2 kg/m³\nV = 20 m/s\nS = 27.25 m²\nc = 4 m\ndCm = 0.153 dimensionless\nIy = 5000 kg m²\nother = -750 N m\ntarget = 0.12 rad/s²\nmass = 900 kg (context; pitch response uses the declared pitch inertia)",
+    "900 kg trainer; rho=1.20 kg/m³; V=20 m/s; S=27.25 m²; c=4 m; usable dCm=0.153; Iy=5000 kg m²; other=-750 N m; target=0.12 rad/s². Nose-up moment is positive about the declared CG.",
     "Available and required moment (N m), margin (N m), acceleration (rad/s²).",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
+    "Hold the supplied usable coefficient increment, loading, flap/power state, and local-flow assumption fixed during this first screen. Full available nose-up control moment is commanded. These assumptions require later review.",
     "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
     "Increasing speed increases available moment quadratically.",
     "Available 4002.48 N m; required 1350 N m; margin 2652.48 N m; full-command acceleration 0.650496 rad/s².",
     "Test 20 and 10 m/s, include equality with the required acceleration.",
     "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each V in [10, 14, 20, 24]:\n  configured output = (0.5*rho*V^2*S*c*dCm+other)/Iy\n  comparison = target\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "For each speed, compute available moment, subtract the 1350 N m demand, and calculate (available-750)/5000. For the short replay only, pitch angle=0.5*initialAcceleration*time² from rest over 0.5 s. This extrapolation is not a ground-run simulation.",
     "The supplied baseline meets initial authority demand. No takeoff claim follows."
   ],
   "variables": {
@@ -109,5 +109,6 @@
     "reference": "threshold",
     "units": "Speed V in m/s; initial pitch acceleration in rad/s²."
   },
-  "codeCases": null
+  "codeCases": null,
+  "chapter": "§6.1, §6.4, §6.9 — response demand and trainer authority"
 }

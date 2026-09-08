@@ -1,102 +1,130 @@
 {
   "id": "mission12",
   "number": 12,
-  "version": "1.0.0",
-  "title": "Defend a bounded decision",
-  "brief": "Configuration A needs 240 N drag; B needs 320 N. Available thrust is 300 N. The supplied drag estimates have ±10% uncertainty.",
+  "version": "2.0.0",
+  "title": "Review uncertainty before retaining a claim",
+  "chapter": "§6.7–6.9 — uncertainty and technical review",
+  "brief": "Make two bounded review decisions without mixing aircraft: the trainer pitch screen and the separate engine-out yaw screen. Explain why nominal success is not enough.",
   "missing": [
     11
   ],
   "supplied": [
-    "Which configuration meets the supplied thrust requirement, including the stated uncertainty?",
-    "Worst-case drag=1.1*D; margin=T-1.1*D",
-    "T = 300 N\nD = 240 (declared parameter)",
-    "Worst-case drag and thrust margin in N.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "A may remain feasible while B fails.",
-    "A worst-case margin=36 N. B worst-case margin=−52 N.",
-    "Compare both alternatives and the uncertainty bound.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each D in [240, 320]:\n  configured output = T-1.1*D\n  comparison = 0\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
+    "Which control claims survive conservative uncertainty bounds in the trainer pitch case and the separate twin-engine yaw case?",
+    "Conservative margin=(available-availableUncertainty)-(required+requiredUncertainty). For yaw: margin=(1-lossFraction)*8600-(1+demandIncrease)*7440.",
+    "Trainer chapter rounded screen: available=4000±300 N m; required=1350±200 N m. Separate yaw aircraft: nominal available=8600 N m and required=7440 N m; test 10% less capacity and 5% more demand.",
+    "Nominal and conservative margins with a condition-specific decision for each aircraft.",
+    "Use stated interval bounds, not a probability of safety. The chapter rounds trainer capacity to 4.00 kN m for this uncertainty example.",
+    "Neither favorable static pitch arithmetic nor a nominal yaw pass establishes transient mission performance. Do not transfer evidence between the two aircraft.",
+    "The trainer interval margin remains positive; the separate yaw case becomes slightly negative under both adverse changes.",
+    "Trainer: (4000-300)-(1350+200)=2150 N m. Yaw: 0.9*8600-1.05*7440=-72 N m.",
+    "Yaw nominal margin=1160; with only 10% capacity loss=300; with both adverse changes=-72 N m. Preserve the failure rather than rounding it away.",
+    "Display separate aircraft and conditions; record requirement, model, evidence, decision, limitation and next evidence.",
+    "Sweep yaw capacity loss while applying the stated 5% demand increase; compare the resulting margin with zero.",
     null
   ],
   "variables": {
-    "T": 300,
-    "D": 240
+    "lossFraction": 0.1,
+    "demandIncrease": 0.05
   },
   "fields": [
     {
-      "id": "configuration",
-      "label": "Configuration meeting the bound",
+      "id": "trainerMargin",
+      "label": "Conservative trainer margin using chapter rounded inputs (N m)",
+      "type": "number",
+      "section": 11
+    },
+    {
+      "id": "yawMargin",
+      "label": "Conservative yaw margin under both changes (N m)",
+      "type": "number",
+      "section": 11
+    },
+    {
+      "id": "trainerDecision",
+      "label": "Trainer decision",
       "type": "select",
       "options": [
-        "A",
-        "B",
-        "Both"
+        "Retain for further pitch analysis only",
+        "Approve successful short-runway takeoff"
       ],
       "section": 11
     },
     {
-      "id": "decision",
-      "label": "Decision",
+      "id": "yawDecision",
+      "label": "Yaw decision",
       "type": "select",
       "options": [
-        "RETAIN",
-        "NARROW",
-        "REVISE",
-        "WITHDRAW"
+        "Withhold operational claim and investigate uncertainty",
+        "Approve because nominal margin was positive"
       ],
       "section": 11
     },
     {
-      "id": "claim",
-      "label": "Claim boundary",
+      "id": "next",
+      "label": "Next evidence to request",
       "type": "select",
       "options": [
-        "Supplied condition only",
-        "All flight conditions",
-        "Aircraft certified safe"
+        "Compatible coefficient, local-flow, actuator and transient evidence",
+        "A more confident software statement"
       ],
       "section": 11
     },
     {
       "id": "explanation11",
-      "section": 11,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for decision",
+      "type": "text",
+      "section": 11
     }
   ],
   "checks": [
     {
-      "field": "configuration",
-      "expected": "A",
-      "message": "Compare available thrust with the upper drag bound."
+      "field": "trainerMargin",
+      "expected": 2150,
+      "message": "Use the conservative rounded chapter bounds.",
+      "tolerance": 1e-06
     },
     {
-      "field": "decision",
-      "expected": "RETAIN",
-      "message": "A supports retaining the bounded supplied-condition claim."
+      "field": "yawMargin",
+      "expected": -72,
+      "message": "Do not round a negative margin into a pass.",
+      "tolerance": 0.01
     },
     {
-      "field": "claim",
-      "expected": "Supplied condition only",
-      "message": "Do not expand the claim beyond the tested condition."
+      "field": "trainerDecision",
+      "expected": "Retain for further pitch analysis only",
+      "message": "A static screen does not establish successful takeoff.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "yawDecision",
+      "expected": "Withhold operational claim and investigate uncertainty",
+      "message": "The adverse yaw interval fails.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "next",
+      "expected": "Compatible coefficient, local-flow, actuator and transient evidence",
+      "message": "Request evidence that addresses the remaining model and condition gaps.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "Use the larger drag from the uncertainty band for the reserve calculation.",
-    "Configuration A retains positive reserve; B does not.",
-    "Retain A only for the supplied condition. This calculation cannot establish all-flight safety."
+    "Use the lowest available and highest required moment in the interval screen.",
+    "Trainer conservative margin is 2150 N m; the yaw screen under both adverse changes is -72 N m.",
+    "Retain the trainer direction for further analysis, but withhold unsupported mission-level claims."
   ],
   "sweep": {
-    "variable": "D",
+    "variable": "lossFraction",
     "values": [
-      240,
-      320
+      0,
+      0.05,
+      0.1,
+      0.15
     ],
-    "expression": "T-1.1*D",
-    "reference": "0"
+    "expression": "(1-lossFraction)*8600-(1+demandIncrease)*7440",
+    "reference": "0",
+    "units": "Fractional loss of available yaw authority; conservative yaw margin in N m."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

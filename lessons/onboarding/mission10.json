@@ -1,29 +1,33 @@
 {
   "id": "mission10",
   "number": 10,
-  "version": "1.0.0",
-  "title": "Specify a useful control panel",
-  "brief": "Configure a panel that distinguishes maximum elevator capacity from the commanded fraction.",
+  "version": "2.0.0",
+  "title": "Specify command and actuator limits",
+  "chapter": "§6.2–6.3, §6.6 — command, travel and actuator rate",
+  "brief": "Specify an instrument that separates available capacity, applied command, and actuator timing. Static capacity alone must not unlock a time-critical claim.",
   "missing": [
     9
   ],
   "supplied": [
-    "Does a half command apply half of the declared available moment?",
-    "Applied=u*available; 0≤u≤1",
-    "u = 0.5 dimensionless\navailable = 4000 (declared parameter)",
-    "Available and applied moment in N m.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "Linear command mapping is a teaching approximation, not validated elevator aerodynamics.",
-    "A half command applies 2000 N m even though capacity remains 4000 N m.",
-    "At u=0.5 applied=2000 N m.",
-    "Test 0, 0.5, 1 and invalid commands.",
+    "Can a commanded elevator response be delivered within the available travel and time, while keeping capacity distinct from applied moment?",
+    "M_applied=u*available; 0<=u<=1. Required normalized command=(Iy*target-other)/available. For this synthetic actuator case, timeNeeded=travelDeg/rateDegPerSec.",
+    "available=4002.48 N m; Iy=5000; target=0.12 rad/s²; other=-750 N m. Synthetic actuator demand travel=12 deg, rate=20 deg/s, deadline=0.4 s.",
+    "Available capacity, applied moment (N m), normalized command, slew time (s), and separate static/rate statuses.",
+    "The linear command map is a teaching approximation. Constant actuator slew rate ignores load dependence; no validated hinge-moment or pilot-force model is supplied.",
+    "A favorable static moment margin does not establish timely delivery or real elevator aerodynamics.",
+    "Half command applies 2001.24 N m; capacity remains 4002.48 N m. The 12° movement takes 0.6 s and misses the 0.4 s deadline.",
+    "1350/4002.48≈0.33729 command for the initial acceleration target. 12/20=0.6 s; 0.6>0.4.",
+    "Check u=0, 0.5, 1; reject u outside [0,1]. Show that static capacity passes while the synthetic rate deadline fails.",
     null,
-    "Supplied executable experiment recipe:\nFor each u in [0, 0.25, 0.5, 0.75, 1]:\n  configured output = u*available\n  comparison = available\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "Keep capacity and applied command distinct."
+    "Sweep u and calculate applied moment and net initial acceleration. Independently compare actuator time with the declared deadline.",
+    "Retain the static screen, withhold the time-critical response claim for this actuator scenario and request load/rate evidence."
   ],
   "variables": {
     "u": 0.5,
-    "available": 4000
+    "available": 4002.48,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12
   },
   "fields": [
     {
@@ -40,43 +44,73 @@
     },
     {
       "id": "label",
-      "label": "Capacity label",
+      "label": "Label on the maximum available moment",
       "type": "select",
       "options": [
         "Available capacity",
-        "Applied moment",
-        "Successful takeoff"
+        "Current applied moment"
+      ],
+      "section": 9
+    },
+    {
+      "id": "slew",
+      "label": "Time to move 12° at 20°/s (s)",
+      "type": "number",
+      "section": 9
+    },
+    {
+      "id": "timely",
+      "label": "Response relative to the 0.4 s deadline",
+      "type": "select",
+      "options": [
+        "Rate requirement fails",
+        "Static margin proves it is timely"
       ],
       "section": 9
     },
     {
       "id": "explanation9",
-      "section": 9,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for feature requirements",
+      "type": "text",
+      "section": 9
     }
   ],
   "checks": [
     {
       "field": "maximum",
       "expected": 1,
-      "message": "Use the specified normalized interval."
+      "message": "Use the declared normalized interval.",
+      "tolerance": 1e-06
     },
     {
       "field": "applied",
-      "expected": 2000,
-      "message": "Only the commanded fraction is applied."
+      "expected": 2001.24,
+      "message": "Apply only the commanded fraction of capacity.",
+      "tolerance": 0.01
     },
     {
       "field": "label",
       "expected": "Available capacity",
-      "message": "Do not label maximum capacity as the current applied moment."
+      "message": "Capacity is not the current applied moment.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "slew",
+      "expected": 0.6,
+      "message": "Travel divided by slew rate gives the minimum stated movement time.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "timely",
+      "expected": "Rate requirement fails",
+      "message": "A 0.6 s movement misses a 0.4 s deadline.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "The command fraction changes applied moment, not the actuator’s full capacity.",
-    "Half command means u=0.5; use the supplied capacity.",
-    "Half of 4000 N m is 2000 N m. The permitted command range ends at one."
+    "At u=0.5 apply half of 4002.48 N m.",
+    "Travel/rate=12/20=0.6 s.",
+    "Show both results: static moment is available, but this synthetic actuator misses its deadline."
   ],
   "sweep": {
     "variable": "u",
@@ -88,7 +122,9 @@
       1
     ],
     "expression": "u*available",
-    "reference": "available"
+    "reference": "available",
+    "units": "Normalized command dimensionless; applied and available pitching moment in N m."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

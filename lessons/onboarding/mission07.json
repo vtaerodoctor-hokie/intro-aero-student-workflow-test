@@ -1,86 +1,222 @@
 {
   "id": "mission07",
   "number": 7,
-  "version": "1.0.0",
-  "title": "Predict before you sweep",
-  "brief": "Hold lift and dynamic pressure fixed. Predict the change in induced drag when span doubles.",
+  "version": "2.0.0",
+  "title": "Predict the limiting pitch condition",
+  "chapter": "§6.4, §6.6, §6.11 — limiting conditions",
+  "brief": "Record predictions before running five pitch-authority challenges. A lower-speed condition is not automatically a failure: calculate its margin.",
   "missing": [
     6
   ],
   "supplied": [
-    "How does span affect induced drag at fixed lift and condition?",
-    "Di=L^2/(pi*e*q*b^2)",
-    "L = 5000 N\npi = 3.141592653589793 (declared parameter)\ne = 0.8 dimensionless\nq = 240 Pa\nb = 10 m",
-    "Induced drag in N.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
+    "How do lower speed, increased pitch inertia, a stronger opposing moment and effector degradation affect the trainer margin?",
+    "M_available=0.5*rho*V²*S*c*dCm; M_required=Iy*target-other; margin=M_available-M_required; initial acceleration=(M_available+other)/Iy at full command.",
+    "900 kg trainer; rho=1.20 kg/m³; V=20 m/s; S=27.25 m²; c=4 m; usable dCm=0.153; Iy=5000 kg m²; other=-750 N m; target=0.12 rad/s². Nose-up moment is positive about the declared CG.",
+    "Available moment, required moment and margin (N m); pass/fail for each explicitly changed condition.",
+    "Change one parameter at a time. Increasing Iy changes response demand, not aerodynamic capacity. A degraded coefficient is a synthetic sensitivity case, not a failure probability.",
+    "Initial single-axis pitch screen at the declared condition. Constant coefficients and inertia. No proof of successful takeoff, ground clearance, stall recovery, or safe landing.",
     null,
-    "Di at b=10 m is about 414.466 N; at b=20 m about 103.617 N.",
-    "Check the ratio at twice the span.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each b in [8, 10, 12, 16, 20]:\n  configured output = L^2/(pi*e*q*b^2)\n  comparison = L^2/(pi*e*q*b^2)\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "The reduced induced drag claim excludes structural weight and other design effects."
+    "Baseline margin=2652.48. At 14 m/s margin=611.2152 (pass); at 10 m/s margin=-349.38 (fail). Iy=10000 at 20 m/s gives margin=2052.48. other=-2000 gives margin=1402.48. dCm=0.04 gives margin=-303.6 (fail). All moments N m.",
+    "Check 0.7² speed scaling; distinguish the unchanged capacity in the inertia challenge from the increased required moment.",
+    "Show a named challenge table and a speed sweep; keep predictions separate from observed results.",
+    "Evaluate the full moment budget once for each named single-parameter change. Compare signed margin with zero.",
+    "14 m/s remains a pass under fixed assumptions; the low-speed and degraded-effector failure cases need revised evidence or a narrower claim."
   ],
   "variables": {
-    "L": 5000,
-    "pi": 3.141592653589793,
-    "e": 0.8,
-    "q": 240,
-    "b": 10
+    "rho": 1.2,
+    "V": 20,
+    "S": 27.25,
+    "c": 4,
+    "dCm": 0.153,
+    "Iy": 5000,
+    "other": -750,
+    "target": 0.12
   },
   "fields": [
     {
-      "id": "direction",
-      "label": "Change when span doubles",
-      "type": "select",
-      "options": [
-        "Decreases",
-        "Increases",
-        "Unchanged"
-      ],
-      "section": 6
-    },
-    {
       "id": "ratio",
-      "label": "New drag / original drag",
+      "label": "Available-moment ratio at 14 versus 20 m/s",
       "type": "number",
       "section": 6
     },
     {
+      "id": "lowSpeed",
+      "label": "Predicted 14 m/s outcome",
+      "type": "select",
+      "options": [
+        "Still passes with less margin",
+        "Fails necessarily"
+      ],
+      "section": 6
+    },
+    {
+      "id": "inertia",
+      "label": "Effect of doubling Iy on required moment",
+      "type": "select",
+      "options": [
+        "Increases required moment",
+        "Increases aerodynamic capacity"
+      ],
+      "section": 6
+    },
+    {
+      "id": "degraded",
+      "label": "Predicted dCm=0.04 outcome",
+      "type": "select",
+      "options": [
+        "Insufficient authority",
+        "Unchanged margin"
+      ],
+      "section": 6
+    },
+    {
       "id": "explanation6",
-      "section": 6,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for predictions",
+      "type": "text",
+      "section": 6
     }
   ],
   "checks": [
     {
-      "field": "direction",
-      "expected": "Decreases",
-      "message": "Span appears in the denominator."
+      "field": "ratio",
+      "expected": 0.49,
+      "message": "Use (14/20)².",
+      "tolerance": 1e-06
     },
     {
-      "field": "ratio",
-      "expected": 0.25,
-      "message": "Apply the square of the span ratio."
+      "field": "lowSpeed",
+      "expected": "Still passes with less margin",
+      "message": "1961.2152 N m capacity still exceeds 1350 N m demand.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "inertia",
+      "expected": "Increases required moment",
+      "message": "Required moment contains Iy*target; capacity does not contain Iy.",
+      "tolerance": 1e-06
+    },
+    {
+      "field": "degraded",
+      "expected": "Insufficient authority",
+      "message": "The degraded capacity 1046.4 N m is below 1350 N m.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "Hold lift, dynamic pressure and efficiency constant when changing span.",
-    "Span appears squared in the denominator of this induced-drag model.",
-    "Doubling span gives one quarter of the original induced drag."
+    "Lower speed changes capacity quadratically; inertia changes demand.",
+    "At 14 m/s, 0.49×4002.48=1961.2152 N m, still above 1350 N m.",
+    "Degraded dCm=0.04 yields 1046.4 N m. Separate this synthetic failure from the baseline."
   ],
   "sweep": {
-    "variable": "b",
+    "variable": "V",
     "values": [
-      8,
       10,
-      12,
-      16,
-      20
+      14,
+      20,
+      24
     ],
-    "expression": "L^2/(pi*e*q*b^2)",
-    "reference": "L^2/(pi*e*q*b^2)"
+    "expression": "0.5*rho*V^2*S*c*dCm-(Iy*target-other)",
+    "reference": "0",
+    "units": "Airspeed in m/s; pitch-authority margin in N m."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null,
+  "challenges": [
+    {
+      "name": "Trainer baseline",
+      "inputs": {
+        "rho": 1.2,
+        "V": 20,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.153,
+        "Iy": 5000,
+        "other": -750,
+        "target": 0.12
+      },
+      "available": 4002.48,
+      "required": 1350.0,
+      "margin": 2652.48
+    },
+    {
+      "name": "Lower speed: 14 m/s",
+      "inputs": {
+        "rho": 1.2,
+        "V": 14,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.153,
+        "Iy": 5000,
+        "other": -750,
+        "target": 0.12
+      },
+      "available": 1961.2151999999999,
+      "required": 1350.0,
+      "margin": 611.2151999999999
+    },
+    {
+      "name": "Synthetic insufficient speed: 10 m/s",
+      "inputs": {
+        "rho": 1.2,
+        "V": 10,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.153,
+        "Iy": 5000,
+        "other": -750,
+        "target": 0.12
+      },
+      "available": 1000.62,
+      "required": 1350.0,
+      "margin": -349.38
+    },
+    {
+      "name": "Doubled inertia",
+      "inputs": {
+        "rho": 1.2,
+        "V": 20,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.153,
+        "Iy": 10000,
+        "other": -750,
+        "target": 0.12
+      },
+      "available": 4002.48,
+      "required": 1950.0,
+      "margin": 2052.48
+    },
+    {
+      "name": "Stronger opposing moment",
+      "inputs": {
+        "rho": 1.2,
+        "V": 20,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.153,
+        "Iy": 5000,
+        "other": -2000,
+        "target": 0.12
+      },
+      "available": 4002.48,
+      "required": 2600.0,
+      "margin": 1402.48
+    },
+    {
+      "name": "Synthetic degraded effector",
+      "inputs": {
+        "rho": 1.2,
+        "V": 20,
+        "S": 27.25,
+        "c": 4,
+        "dCm": 0.04,
+        "Iy": 5000,
+        "other": -750,
+        "target": 0.12
+      },
+      "available": 1046.4,
+      "required": 1350.0,
+      "margin": -303.5999999999999
+    }
+  ]
 }

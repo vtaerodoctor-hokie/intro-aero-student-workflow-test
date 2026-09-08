@@ -1,114 +1,96 @@
 {
   "id": "mission03",
   "number": 3,
-  "version": "1.0.0",
-  "title": "Give the model usable inputs",
-  "brief": "Convert 72 km/h into SI speed and populate the lift calculator. Use a 500 kg aircraft, density 1.20 kg/m³, 20 m² area and CL=1.2.",
+  "version": "2.0.0",
+  "title": "Respect derivative units and usable travel",
+  "chapter": "§6.3 — Worked Example A",
+  "brief": "Enter the signed inputs from Worked Example A: −1.05 rad⁻¹, required ΔCm=−0.25, and +18° usable travel. Avoid the factor-of-57.3 unit error.",
   "missing": [
     2
   ],
   "supplied": [
-    "Does the supplied lift capacity meet weight at this condition?",
-    "L=0.5*rho*V^2*S*CL; W=mass*g",
+    "Using Chapter 6 Worked Example A, does a requested dCm=-0.25 lie within the usable positive elevator travel?",
+    "deltaRad=demand/slope; deltaDeg=deltaRad*180/pi. Here slope is per radian; positive elevator deflection produces a negative pitching-moment increment.",
     null,
-    "Lift, weight and lift-minus-weight in N.",
-    "Quasi-steady supplied coefficients. Change only the declared independent quantity; other inputs remain fixed.",
-    "This is a bounded teaching calculation. It does not establish aircraft safety, successful takeoff, or behavior outside the specified condition.",
-    "Using 72 as m/s greatly overstates lift.",
-    "L=5760 N; W=4905 N; margin=855 N.",
-    "Check SI conversion and the supplied configuration.",
-    "Show controls with units, supplied and student results separately, a result trace, and a clear limitation.",
-    "Supplied executable experiment recipe:\nFor each V in [10, 15, 20, 25]:\n  configured output = 0.5*rho*V^2*S*CL-mass*g\n  comparison = 0\nReturn the paired values with the declared units.\n\nThe app uses the arithmetic evaluator in src/core/onboarding/expression.js. It supports +, -, *, /, ^ and parentheses; it never evaluates an equation as JavaScript.",
-    "The supplied lift capacity exceeds weight; this alone is not proof of trimmed flight."
+    "Required elevator deflection in rad and deg, travel residual in deg, and local-screen status.",
+    "The local derivative is held fixed provisionally. The stated usable stop is a limit, not proof that the derivative applies throughout the travel.",
+    "Local derivative/travel screen only. Actuator holding force, rate, nonlinear response and coupled limits remain unverified.",
+    "The required deflection should be positive and smaller than 18 degrees.",
+    "(-0.25)/(-1.05)=0.238095 rad=13.6419 deg; residual=4.3581 deg.",
+    "Retain the negative coefficient sign; use -1.05 per radian, not per degree; compare 13.6419 deg with the 18 deg usable limit.",
+    "Plot demand-derived deflection against coefficient demand and show the usable limit in degrees.",
+    "For each coefficient demand evaluate demand/slope*180/pi and compare with the supplied usableLimit. Do not substitute degrees into a per-radian derivative.",
+    "Provisionally retain the local travel screen; request a coefficient-versus-deflection sweep and actuator data."
   ],
   "variables": {
-    "rho": 1.2,
-    "V": 20,
-    "S": 20,
-    "CL": 1.2,
-    "mass": 500,
-    "g": 9.81
+    "demand": -0.25,
+    "slope": -1.05,
+    "pi": 3.141592653589793,
+    "usableLimit": 18
   },
   "fields": [
     {
-      "id": "V",
-      "label": "Speed (m/s)",
+      "id": "slope",
+      "label": "Effectiveness derivative (per radian)",
       "type": "number",
       "section": 2
     },
     {
-      "id": "mass",
-      "label": "Mass (kg)",
+      "id": "demand",
+      "label": "Required signed coefficient increment",
       "type": "number",
       "section": 2
     },
     {
-      "id": "S",
-      "label": "Area (m²)",
-      "type": "number",
-      "section": 2
-    },
-    {
-      "id": "rho",
-      "label": "Density (kg/m³)",
-      "type": "number",
-      "section": 2
-    },
-    {
-      "id": "CL",
-      "label": "Lift coefficient (dimensionless)",
+      "id": "usableLimit",
+      "label": "Positive usable travel limit (deg)",
       "type": "number",
       "section": 2
     },
     {
       "id": "explanation2",
-      "section": 2,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for inputs",
+      "type": "text",
+      "section": 2
     }
   ],
   "checks": [
     {
-      "field": "V",
-      "expected": 20,
-      "message": "Match the supplied condition and convert units before running."
+      "field": "slope",
+      "expected": -1.05,
+      "message": "The chapter reports a negative derivative per radian.",
+      "tolerance": 1e-06
     },
     {
-      "field": "mass",
-      "expected": 500,
-      "message": "Match the supplied condition and convert units before running."
+      "field": "demand",
+      "expected": -0.25,
+      "message": "Preserve the signed negative coefficient demand.",
+      "tolerance": 1e-06
     },
     {
-      "field": "S",
-      "expected": 20,
-      "message": "Match the supplied condition and convert units before running."
-    },
-    {
-      "field": "rho",
-      "expected": 1.2,
-      "message": "Match the supplied condition and convert units before running."
-    },
-    {
-      "field": "CL",
-      "expected": 1.2,
-      "message": "Match the supplied condition and convert units before running."
+      "field": "usableLimit",
+      "expected": 18,
+      "message": "Use the usable limit, not a farther geometric stop.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "Convert 72 km/h to m/s before using the force equation.",
-    "Divide km/h by 3.6; kg is a mass unit, not a force unit.",
-    "The SI speed is 20 m/s. Weight is mass*g, while lift uses density, area and CL."
+    "Negative demand divided by negative effectiveness gives positive deflection.",
+    "Keep the derivative per radian; convert the resulting angle to degrees once.",
+    "The local result is about 13.64 degrees, but passing the travel check is not full authority verification."
   ],
   "sweep": {
-    "variable": "V",
+    "variable": "demand",
     "values": [
-      10,
-      15,
-      20,
-      25
+      -0.1,
+      -0.2,
+      -0.25,
+      -0.35
     ],
-    "expression": "0.5*rho*V^2*S*CL-mass*g",
-    "reference": "0"
+    "expression": "demand/slope*180/pi",
+    "reference": "usableLimit",
+    "units": "Coefficient increment dimensionless; elevator deflection in deg."
   },
-  "codeCases": null
+  "codeCases": null,
+  "codeContract": null
 }

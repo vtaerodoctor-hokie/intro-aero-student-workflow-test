@@ -1,9 +1,10 @@
 {
   "id": "mission13",
   "number": 13,
-  "version": "1.0.0",
-  "title": "Homework: establish a new flight-condition claim",
-  "brief": "For rho=1.2 kg/m³, V=25 m/s, S=16 m², CL capacity=1.0, Cd=0.04, mass=500 kg, g=9.81 m/s² and thrust=300 N: can lift capacity and available thrust meet their demands? This is a capacity check, not a solved trim state. Complete all twelve sections.",
+  "version": "2.0.0",
+  "title": "Homework: reopen the crosswind claim",
+  "chapter": "§6.10, §6.12 — changed requirement and complete review",
+  "brief": "The trainer must now address a 6 m/s crosswind with 20 m/s runway-axis airspeed. Chapter geometry gives a 16.7° crab angle; this is not a rudder command. Complete all twelve sections. For a LOCAL TEACHING EXERCISE ONLY, use synthetic CnBeta=0.10/rad, beta=0.08 rad, Cn0=0 and CnRudder=-0.08/rad, with rudder limits ±0.12 rad. This beta is an independent sideslip scenario, not a conversion of the crab angle. Use CnBeta*beta+CnRudder*deltaR+Cn0=0. No roll, lateral-force, gust, de-crab, tire, clearance or workload model is supplied. Explain crab versus sideslip/de-crab, identify missing evidence and stakeholder consequences, and decide whether the operational crosswind claim is supported. Implement calculate(input) returning -(CnBeta*beta+Cn0)/CnRudder in rad. Require finite numeric inputs and nonzero CnRudder. Throw Error for invalid inputs. This local yaw balance cannot establish crosswind controllability.",
   "missing": [
     0,
     1,
@@ -33,295 +34,315 @@
     null
   ],
   "variables": {
-    "rho": 1.2,
-    "V": 25,
-    "S": 16,
-    "CL": 1,
-    "Cd": 0.04,
-    "mass": 500,
-    "g": 9.81,
-    "T": 300
+    "CnBeta": 0.1,
+    "beta": 0.08,
+    "Cn0": 0,
+    "CnRudder": -0.08,
+    "usableLimit": 0.12
   },
   "fields": [
     {
       "id": "question",
-      "label": "Your measurable engineering question",
+      "label": "Changed crosswind engineering question",
       "type": "text",
       "section": 0
     },
     {
-      "id": "liftEquation",
-      "label": "Lift capacity equation (rho, V, S, CL)",
+      "id": "equation",
+      "label": "Local rudder balance: deltaR = (use CnBeta, beta, Cn0, CnRudder)",
       "type": "equation",
       "section": 1
     },
     {
-      "id": "dragEquation",
-      "label": "Drag equation (rho, V, S, Cd)",
-      "type": "equation",
-      "section": 1
-    },
-    {
-      "id": "V",
-      "label": "Speed (m/s)",
+      "id": "beta",
+      "label": "Synthetic sideslip beta (rad)",
       "type": "number",
       "section": 2
     },
     {
       "id": "output",
-      "label": "Decision output",
+      "label": "Outputs required for the operational claim",
       "type": "select",
-      "section": 3,
       "options": [
-        "Both lift and thrust margins",
-        "Aircraft color",
-        "Speed alone"
-      ]
+        "Coupled yaw, roll, lateral force and transient limits",
+        "Pitch margin alone"
+      ],
+      "section": 3
     },
     {
       "id": "assumption",
-      "label": "Identify the simplification",
+      "label": "Nature of supplied derivative data",
       "type": "select",
-      "section": 4,
       "options": [
-        "Coefficients held fixed",
-        "All conditions validated"
-      ]
+        "Synthetic local held-condition coefficients",
+        "Validated all-envelope aircraft data"
+      ],
+      "section": 4
     },
     {
       "id": "validity",
-      "label": "Supported scope",
+      "label": "What the local yaw balance can establish",
       "type": "select",
-      "section": 5,
       "options": [
-        "Supplied steady condition",
-        "Takeoff and all maneuvers"
-      ]
+        "Local static yaw balance only",
+        "Safe crosswind touchdown"
+      ],
+      "section": 5
     },
     {
       "id": "prediction",
-      "label": "Drag ratio if speed doubles",
+      "label": "Predicted rudder-deflection ratio if beta doubles",
       "type": "number",
       "section": 6
     },
     {
-      "id": "lift",
-      "label": "Reference lift capacity (N)",
-      "type": "number",
-      "section": 7
-    },
-    {
-      "id": "drag",
-      "label": "Reference drag (N)",
+      "id": "reference",
+      "label": "Local rudder demand at beta=0.08 rad (rad)",
       "type": "number",
       "section": 7
     },
     {
       "id": "boundary",
-      "label": "Negative speed behavior",
+      "label": "Behavior when CnRudder=0",
       "type": "select",
-      "section": 8,
       "options": [
-        "Reject input",
-        "Accept input"
-      ]
+        "Reject ineffective local balance",
+        "Return zero rudder demand"
+      ],
+      "section": 8
     },
     {
-      "id": "unit",
-      "label": "Force output unit",
+      "id": "requirement",
+      "label": "Result when roll/gust/ground-contact evidence is missing",
       "type": "select",
-      "section": 9,
       "options": [
-        "N",
-        "kg",
-        "m/s"
-      ]
+        "Insufficient model",
+        "Operational pass"
+      ],
+      "section": 9
     },
     {
       "id": "code",
-      "label": "Implement function calculate(input) returning drag (N)",
+      "label": "JavaScript: function calculate(input) returning rudder demand (rad)",
       "type": "code",
       "section": 10
     },
     {
       "id": "decision",
-      "label": "Decision for the bounded capacity question",
+      "label": "Crosswind operational decision",
       "type": "select",
-      "section": 11,
       "options": [
-        "RETAIN",
-        "WITHDRAW"
-      ]
+        "Withhold crosswind claim pending coupled evidence",
+        "Approve from the earlier pitch screen"
+      ],
+      "section": 11
     },
     {
       "id": "explanation0",
-      "section": 0,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for engineering question",
+      "type": "text",
+      "section": 0
     },
     {
       "id": "explanation1",
-      "section": 1,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for physics model",
+      "type": "text",
+      "section": 1
     },
     {
       "id": "explanation2",
-      "section": 2,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for inputs",
+      "type": "text",
+      "section": 2
     },
     {
       "id": "explanation3",
-      "section": 3,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for outputs",
+      "type": "text",
+      "section": 3
     },
     {
       "id": "explanation4",
-      "section": 4,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for assumptions",
+      "type": "text",
+      "section": 4
     },
     {
       "id": "explanation5",
-      "section": 5,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for validity",
+      "type": "text",
+      "section": 5
     },
     {
       "id": "explanation6",
-      "section": 6,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for predictions",
+      "type": "text",
+      "section": 6
     },
     {
       "id": "explanation7",
-      "section": 7,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for manual reference",
+      "type": "text",
+      "section": 7
     },
     {
       "id": "explanation8",
-      "section": 8,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for verification cases",
+      "type": "text",
+      "section": 8
     },
     {
       "id": "explanation9",
-      "section": 9,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for feature requirements",
+      "type": "text",
+      "section": 9
     },
     {
       "id": "explanation10",
-      "section": 10,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for implementation",
+      "type": "text",
+      "section": 10
     },
     {
       "id": "explanation11",
-      "section": 11,
-      "label": "Explain your engineering reasoning",
-      "type": "text"
+      "label": "Explain the reasoning for decision",
+      "type": "text",
+      "section": 11
     }
   ],
   "checks": [
     {
-      "studentExpression": "liftEquation",
-      "expected": 6000,
-      "message": "Check lift capacity using the supplied condition."
+      "studentExpression": "equation",
+      "expected": 0.1,
+      "message": "The supplied synthetic local yaw balance requires +0.1 rad rudder."
     },
     {
-      "studentExpression": "dragEquation",
-      "expected": 240,
-      "message": "Check the drag relationship."
-    },
-    {
-      "field": "V",
-      "expected": 25,
-      "message": "Use the assigned condition."
+      "field": "beta",
+      "expected": 0.08,
+      "message": "Use radians and preserve the declared positive sideslip.",
+      "tolerance": 1e-06
     },
     {
       "field": "output",
-      "expected": "Both lift and thrust margins",
-      "message": "Both constraints must be checked."
+      "expected": "Coupled yaw, roll, lateral force and transient limits",
+      "message": "A yaw-only screen cannot establish the operational claim.",
+      "tolerance": 1e-06
     },
     {
       "field": "assumption",
-      "expected": "Coefficients held fixed",
-      "message": "State the fixed-coefficient assumption."
+      "expected": "Synthetic local held-condition coefficients",
+      "message": "Do not present the teaching values as aircraft evidence.",
+      "tolerance": 1e-06
     },
     {
       "field": "validity",
-      "expected": "Supplied steady condition",
-      "message": "Do not extend this capacity model to takeoff."
+      "expected": "Local static yaw balance only",
+      "message": "Keep the local balance separate from landing safety.",
+      "tolerance": 1e-06
     },
     {
       "field": "prediction",
-      "expected": 4,
-      "message": "Check quadratic speed scaling."
+      "expected": 2,
+      "message": "With Cn0=0, the local rudder demand scales linearly with beta.",
+      "tolerance": 1e-06
     },
     {
-      "field": "lift",
-      "expected": 6000,
-      "message": "Show an independent lift reference."
-    },
-    {
-      "field": "drag",
-      "expected": 240,
-      "message": "Show an independent drag reference."
+      "field": "reference",
+      "expected": 0.1,
+      "message": "Show the independent signed balance calculation.",
+      "tolerance": 1e-06
     },
     {
       "field": "boundary",
-      "expected": "Reject input",
-      "message": "Require invalid-speed rejection."
+      "expected": "Reject ineffective local balance",
+      "message": "Division by zero effectiveness is not a valid control solution.",
+      "tolerance": 1e-06
     },
     {
-      "field": "unit",
-      "expected": "N",
-      "message": "Output forces in newtons."
+      "field": "requirement",
+      "expected": "Insufficient model",
+      "message": "Missing coupled evidence must remain visible.",
+      "tolerance": 1e-06
     },
     {
       "field": "decision",
-      "expected": "RETAIN",
-      "message": "Both bounded capacity margins are positive."
+      "expected": "Withhold crosswind claim pending coupled evidence",
+      "message": "The earlier pitch screen does not answer the changed roll/yaw requirement.",
+      "tolerance": 1e-06
     }
   ],
   "hints": [
-    "Organize your work by the twelve sections and use SI units throughout.",
-    "Check lift against weight and thrust against drag separately.",
-    "Use the supplied condition and uncertainty limits to support a bounded decision, then test your implementation."
+    "The 16.7° crab angle is a wind-triangle heading offset, not rudder deflection or the synthetic beta.",
+    "Solve the signed local yaw balance: deltaR=-(CnBeta*beta+Cn0)/CnRudder. Check both sides of the travel range.",
+    "Even a passing local yaw/travel case cannot establish coupled crosswind landing capability. Withhold that claim and identify the next evidence."
   ],
   "sweep": {
-    "variable": "V",
+    "variable": "beta",
     "values": [
-      15,
-      20,
-      25,
-      30
+      -0.08,
+      0,
+      0.08,
+      0.12,
+      0.16
     ],
-    "studentField": "dragEquation",
-    "reference": "T"
+    "expression": null,
+    "reference": "usableLimit",
+    "units": "Synthetic sideslip beta and signed rudder demand in rad. Positive travel limit +0.12 rad shown; negative limit is -0.12 rad.",
+    "studentField": "equation"
   },
   "codeCases": [
     {
       "input": {
-        "rho": 1.2,
-        "V": 25,
-        "S": 16,
-        "Cd": 0.04
+        "CnBeta": 0.1,
+        "beta": 0.08,
+        "Cn0": 0,
+        "CnRudder": -0.08
       },
-      "expected": 240
+      "expected": 0.1,
+      "label": "Synthetic local yaw reference"
     },
     {
       "input": {
-        "rho": 1.2,
-        "V": -1,
-        "S": 16,
-        "Cd": 0.04
+        "CnBeta": 0.1,
+        "beta": 0.16,
+        "Cn0": 0,
+        "CnRudder": -0.08
       },
-      "throws": true
+      "expected": 0.2,
+      "label": "Doubled sideslip demands twice the rudder"
+    },
+    {
+      "input": {
+        "CnBeta": 0.1,
+        "beta": -0.08,
+        "Cn0": 0,
+        "CnRudder": -0.08
+      },
+      "expected": -0.1,
+      "label": "Reversed sideslip reverses rudder"
+    },
+    {
+      "input": {
+        "CnBeta": 0.1,
+        "beta": 0.08,
+        "Cn0": 0,
+        "CnRudder": 0
+      },
+      "throws": true,
+      "label": "Reject zero rudder effectiveness"
     }
-  ]
+  ],
+  "codeContract": {
+    "input": [
+      "CnBeta",
+      "beta",
+      "Cn0",
+      "CnRudder"
+    ],
+    "output": {
+      "quantity": "signed local rudder demand",
+      "unit": "rad"
+    },
+    "description": "Implement calculate(input) returning -(CnBeta*beta+Cn0)/CnRudder in rad. Require finite numeric inputs and nonzero CnRudder. Throw Error for invalid inputs. This local yaw balance cannot establish crosswind controllability."
+  }
 }
