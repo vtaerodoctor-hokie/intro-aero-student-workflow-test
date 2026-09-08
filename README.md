@@ -6,7 +6,7 @@ Fork this repository, create a Codespace, and open port **5173**. If needed, run
 
 [Student walkthrough and instructor classroom setup](docs/ONBOARDING-CLASSROOM.md)
 
-The instructor dashboard currently supports local sample review. Live class use requires the GitHub App configuration described in the setup guide. No AI subscription or local student installation is required.
+The instructor dashboard can discover public forks and review submitted commits using your existing GitHub login. Run `npm run instructor`; no GitHub App is needed for public-fork monitoring. No AI subscription or local student installation is required.
 
 <details><summary>Earlier Week 6 prototype documentation</summary>
 

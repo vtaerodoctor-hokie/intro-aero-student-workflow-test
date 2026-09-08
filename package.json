@@ -15,7 +15,8 @@
     "validate:week06": "node scripts/validate-mission.mjs --complete",
     "student": "node scripts/start-student.mjs",
     "instructor": "node scripts/instructor/server.mjs",
-    "instructor:demo": "INSTRUCTOR_DEMO=1 node scripts/instructor/server.mjs"
+    "instructor:demo": "INSTRUCTOR_DEMO=1 node scripts/instructor/server.mjs",
+    "instructor:setup": "node scripts/instructor/setup.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

@@ -19,7 +19,17 @@ Mission 11 and the capstone run student code in a short-lived browser worker ins
 
 Run `npm ci`, then `npm run instructor:demo` and open `http://127.0.0.1:5180`. This is explicitly labeled sample mode, listens only on localhost, and makes no GitHub calls.
 
-Run `npm run instructor` for an authenticated class service. It requires the configuration below and refuses to start without it. The current implementation has been tested locally; connecting real student accounts requires registering and installing your GitHub App. Sample mode is not live monitoring.
+Run `npm run instructor` to monitor **real public forks** using the GitHub login already available through `gh`. No GitHub App or student authorization is needed. The dashboard discovers the test repository's public forks, watches the first 40, and reads their submitted files at immutable commits. A manual refresh discovers new forks; automatic discovery runs every five minutes and commit checks every minute. `gh auth status` helps diagnose account access failures.
+
+Locally, the dashboard listens on localhost only. In an instructor Codespace, keep port 5180 private and open the secret dashboard link printed in the terminal. That temporary link establishes an instructor session and changes when the process restarts. It is not a student link. Student answers and code are read as data; student code is never executed by this service.
+
+In this no-App mode, the reply boxes save **private instructor notes**, not messages delivered to students. The GitHub App option below is retained for authenticated in-app feedback, but it is not necessary to find forks or diagnose their submissions. The dashboard clearly distinguishes these modes. This pilot has verified discovery of the actual test-account fork; end-to-end in-app feedback still needs configuration and account testing.
+
+## Optional authenticated feedback setup (not needed for monitoring)
+
+In a Codespace on your instructor-owned copy of this test repository, run `npm run instructor:setup`. Open private port **5181** and select **Review read-only connection on GitHub**. GitHub asks you to approve the connection. The setup page supplies the settings and stores credentials privately; you do not need to copy secrets. Then run `npm run instructor` and follow the page's port 5180 instructions. This guided registration has not yet been exercised against a real GitHub account in this pilot.
+
+The following manual setup remains available for administrators who already have an App.
 
 ## GitHub App and instructor Codespace setup
 
